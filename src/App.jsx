@@ -1,9 +1,21 @@
-// src/App.jsx
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Login from "./Login";
+import Signup from "./Signup";
+
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-500 to-pink-500 text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">🎉 TailwindCSS 작동 확인 완료!</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Routes>
+    </Router>
   );
 }
 
