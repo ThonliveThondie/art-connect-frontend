@@ -1,3 +1,0 @@
-.icon :is(path, circle, rect, ellipse, polygon, polyline, line) {
-  fill: currentColort;
-}
