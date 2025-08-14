@@ -1,7 +1,11 @@
+import {useState} from 'react';
 import AcceptButton from '../../components/common/buttons/AcceptButton';
 import RejectButton from '../../components/common/buttons/RejectButton';
+import WorkRequestViewModal from '../../components/modal/WorkRequestView';
 
 export default function NewProjectCard({title, location, price, onAccept, onReject}) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <>
       <div
@@ -21,9 +25,12 @@ export default function NewProjectCard({title, location, price, onAccept, onReje
             <AcceptButton onClick={onAccept} />
             <RejectButton onClick={onReject} />
           </div>
-          <button className="text-[16px] text-black/50 underline hover:text-black">작업 의뢰서 보기</button>
+          <button onClick={() => setIsModalOpen(true)} className="text-[16px] text-black/50 underline hover:text-black">
+            작업 의뢰서 보기
+          </button>
         </div>
       </div>
+      <WorkRequestViewModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} workRequestId={1} />
     </>
   );
 }
