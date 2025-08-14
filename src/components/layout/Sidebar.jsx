@@ -28,7 +28,7 @@ const items = (userType) =>
       ]
     : [
         {to: '/new-project', name: '새 프로젝트 제안', Icon: IdeaIcon},
-        {to: '/portfolio/artist', name: '내 포트폴리오', Icon: PortfolioIcon},
+        {to: '/portfolio', name: '내 포트폴리오', Icon: PortfolioIcon},
         {to: '/projects/ongoing', name: '진행 중인 프로젝트', Icon: InProgressIcon},
         {to: '/projects/completed', name: '완료된 프로젝트', Icon: CompletedIcon},
         {to: '/revenue', name: '수입 내역', Icon: CreditCardIcon},

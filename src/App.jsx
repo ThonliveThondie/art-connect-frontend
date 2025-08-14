@@ -11,12 +11,15 @@ import PaymentHistory from './features/payment/PaymentHistory.jsx';
 import ProfileBusiness from './features/profile/ProfileBusiness.jsx';
 import RevenueHistory from './features/revenue/RevenueHistory.jsx';
 import ProfileArtist from './features/profile/ProfileArtist.jsx';
-import PortfolioArtist from './features/portfolio/PortfolioArtist.jsx';
+import Portfolio from './features/portfolio/Portfolio.jsx';
 import OngoingProjects from './features/project/OngoingProjects.jsx';
 import CompletedProjects from './features/project/CompletedProjects.jsx';
+import PortfolioAdd from './features/portfolio/PortfolioAdd.jsx';
+import Login from './Login.jsx';
+import Signup from './Signup.jsx';
 
 const App = () => {
-  const userType = 'business'; // artist로 변경하면 아티스트 홈으로 리다이렉트
+  const userType = 'artist'; // artist로 변경하면 아티스트 홈으로 리다이렉트
 
   return (
     <BrowserRouter>
@@ -36,7 +39,8 @@ const App = () => {
 
           <Route path="/new-project" element={<NewProject />} />
           <Route path="/no-project" element={<NoProject />} />
-          <Route path="/portfolio/artist" element={<PortfolioArtist />} />
+          <Route path="/portfolio" element={<Portfolio userType={userType} />} />
+          <Route path="/portfolio/add" element={<PortfolioAdd />} />
           <Route path="/profile/artist" element={<ProfileArtist />} />
           <Route path="/revenue" element={<RevenueHistory />} />
 
@@ -47,12 +51,11 @@ const App = () => {
           <Route path="/projects/completed" element={<CompletedProjects />} />
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-
           {/* 404 */}
           <Route path="*" element={<div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );

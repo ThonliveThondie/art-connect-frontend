@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import WorkRequestModal from '../../components/modal/WorkRequest';
 import AcceptButton from '../../components/common/buttons/AcceptButton';
 import RefreshButton from '../../components/common/buttons/RefreshButton';
@@ -9,11 +10,16 @@ import DefaultProfile from '../../assets/icons/default-profile.svg';
 
 export default function DesignerCard({designerId = 'designer123'}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleModalSuccess = (data) => {
-    console.log('작업 의뢰서 전송 완료:', data);
+  const handlePortfolioView = () => {
+    navigate('/portfolio', {
+      state: {
+        viewMode: 'browse',
+        designerId: designerId,
+      },
+    });
   };
-
   return (
     <>
       <div className="relative flex flex-col gap-[16px] w-[471px] h-[254px] rounded-[12px] border border-black/10 px-[19px] py-[12px]">
@@ -31,7 +37,9 @@ export default function DesignerCard({designerId = 'designer123'}) {
         </div>
         <div className="flex gap-2">
           <p className="text-[#5F5E5B]">포트폴리오</p>
-          <button className="underline">자세히 보기</button>
+          <button className="underline" onClick={handlePortfolioView}>
+            자세히 보기
+          </button>
         </div>
 
         <div className="flex justify-between">
@@ -51,12 +59,7 @@ export default function DesignerCard({designerId = 'designer123'}) {
           />
         </div>
       </div>
-      <WorkRequestModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        designerId={designerId}
-        onSuccess={handleModalSuccess}
-      />
+      <WorkRequestModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} designerId={designerId} />
     </>
   );
 }
