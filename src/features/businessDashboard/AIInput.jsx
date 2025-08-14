@@ -9,7 +9,7 @@ export default function HomeBusiness() {
 
   const handleSubmit = () => {
     if (inputValue.trim()) {
-      navigate('/ai-recommendation-result', {
+      navigate('/dashboard/ai/result', {
         state: {searchQuery: inputValue.trim()},
       });
     }
