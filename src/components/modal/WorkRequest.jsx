@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {X, ChevronDown, ChevronUp} from 'lucide-react';
+import {Calendar28} from './Calendar';
 import '../modal/form.css';
 
 export default function WorkRequestCreateModal({isOpen, onClose, designerId, onSuccess}) {
@@ -25,8 +26,8 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
     '로고 디자인',
     '브랜드 디자인',
     '굿즈 디자인',
-    '포스터·전단지 디자인',
-    '배너·광고 디자인',
+    '포스터 · 전단지 디자인',
+    '배너 · 광고 디자인',
   ];
 
   // 드롭다운 선택/해제
@@ -86,7 +87,7 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
-      <div className="flex flex-col bg-white rounded-[8px] w-full w-[800px] h-[600px] overflow-hidden flex flex-col px-[32px] py-[24px]">
+      <div className="flex flex-col bg-white rounded-[8px] w-[800px] h-[600px] overflow-hidden flex flex-col px-[32px] py-[24px]">
         {/* 헤더 */}
         <div className="flex justify-between items-center ">
           <h2 className="text-[16px] font-[600]">작업 의뢰서 작성</h2>
@@ -129,11 +130,10 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
 
               <div>
                 <label className="form-label">희망 납기일</label>
-                <input
-                  type="date"
-                  className="form-input"
+                <Calendar28
                   value={formData.deadline}
-                  onChange={(e) => setFormData({...formData, deadline: e.target.value})}
+                  onChange={(d) => setFormData({...formData, deadline: d})}
+                  placeholder="날짜 선택"
                 />
               </div>
 
