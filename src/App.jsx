@@ -3,7 +3,7 @@ import Layout from './components/layout/Layout';
 
 import AIInput from './features/businessDashboard/AIInput.jsx';
 import AIResult from './features/businessDashboard/AIResult.jsx';
-import PortfolioDetail from './features/portfolio/PortfolioDetail.jsx';
+import PortfolioDetail from './features/portfolio/detail/PortfolioDetail';
 import NewProject from './features/artistDashboard/NewProject.jsx';
 import NoProject from './features/artistDashboard/NoProject.jsx';
 import StoreManagement from './features/store/StoreManagement.jsx';
@@ -11,10 +11,10 @@ import PaymentHistory from './features/payment/PaymentHistory.jsx';
 import ProfileBusiness from './features/profile/ProfileBusiness.jsx';
 import RevenueHistory from './features/revenue/RevenueHistory.jsx';
 import ProfileArtist from './features/profile/ProfileArtist.jsx';
-import Portfolio from './features/portfolio/Portfolio.jsx';
+import Portfolio from './features/portfolio/list/Portfolio.jsx';
 import OngoingProjects from './features/project/OngoingProjects.jsx';
 import CompletedProjects from './features/project/CompletedProjects.jsx';
-import PortfolioAdd from './features/portfolio/PortfolioAdd.jsx';
+import PortfolioAdd from './features/portfolio/add/PortfolioAdd.jsx';
 import Login from './Login.jsx';
 import Signup from './Signup.jsx';
 

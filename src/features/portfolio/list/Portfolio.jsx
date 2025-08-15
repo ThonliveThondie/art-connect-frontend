@@ -1,8 +1,8 @@
 import {Plus} from 'lucide-react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import Card from './Card';
-import DefaultProfile from '../../assets/images/default-profile-img.svg';
-import BackButton from '../../components/common/buttons/BackButton';
+import DefaultProfile from '../../../assets/images/default-profile-img.svg';
+import BackButton from '../../../components/common/buttons/BackButton';
 
 export default function Portfolio({userType}) {
   const navigate = useNavigate();

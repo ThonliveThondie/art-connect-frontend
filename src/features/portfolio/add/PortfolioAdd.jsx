@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {HelpCircle} from 'lucide-react';
-import BackButton from '../../components/common/buttons/BackButton';
-import Dropdown from '../../components/common/form/Dropdown';
-import FileUpload from '../../components/common/form/FileUpload';
-import '../../components/common/form/form.css';
+import BackButton from '../../../components/common/buttons/BackButton';
+import Dropdown from '../../../components/common/form/Dropdown';
+import FileUpload from '../../../components/common/form/FileUpload';
+import '../../../components/common/form/form.css';
 import './tooltip.css';
 
 export default function PortfolioAdd() {
