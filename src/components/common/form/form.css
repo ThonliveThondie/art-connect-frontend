@@ -53,10 +53,7 @@
 .form-textarea::placeholder {
   color: rgba(0, 0, 0, 0.5);
 }
-.form-textarea:hover {
-  border-color: #b5b5b5;
-  background: #fafafa;
-}
+
 .form-textarea:focus {
   outline: none;
   border: 1px solid #4a4644;
@@ -70,4 +67,11 @@
 .btn:hover {
   background: #f1eeec;
   border-radius: 4px;
+}
+
+.label-title {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
 }

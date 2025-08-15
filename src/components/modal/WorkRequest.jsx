@@ -1,7 +1,8 @@
 import {useState} from 'react';
-import {X, ChevronDown, ChevronUp} from 'lucide-react';
 import {Calendar28} from './Calendar';
-import '../modal/form.css';
+import Dropdown from '../common/form/Dropdown';
+import FileUpload from '../common/form/FileUpload';
+import '../common/form/form.css';
 
 export default function WorkRequestCreateModal({isOpen, onClose, designerId, onSuccess}) {
   const [formData, setFormData] = useState({
@@ -20,7 +21,6 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const designerTypeOptions = [
     '로고 디자인',
@@ -30,33 +30,18 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
     '배너 · 광고 디자인',
   ];
 
-  // 드롭다운 선택/해제
-  const handleDesignerTypeToggle = (type) => {
-    setFormData((prev) => {
-      const selected = prev.designerTypes;
-      const already = selected.includes(type);
-      if (already) {
-        return {...prev, designerTypes: selected.filter((t) => t !== type)};
-      }
-      if (selected.length >= 3) return prev;
-      return {...prev, designerTypes: [...selected, type]};
-    });
-  };
-
-  // 파일 업로드
-  const handleFileUpload = (files) => {
-    const fileArray = Array.from(files || []);
-    if (fileArray.length === 0) return;
+  const handleDesignerTypesChange = (newValues) => {
     setFormData((prev) => ({
       ...prev,
-      referenceFiles: [...prev.referenceFiles, ...fileArray],
+      designerTypes: newValues,
     }));
   };
 
-  const removeFile = (index) => {
+  // 파일 업로드 핸들러
+  const handleFileChange = (newFiles) => {
     setFormData((prev) => ({
       ...prev,
-      referenceFiles: prev.referenceFiles.filter((_, i) => i !== index),
+      referenceFiles: newFiles,
     }));
   };
 
@@ -215,62 +200,12 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
           <div className="container">
             <h3 className="container-title">3. 요청 디자인 활용</h3>
             <div className="px-[8px]">
-              {/* 선택된 항목 */}
-              {formData.designerTypes.length > 0 && (
-                <div className="flex flex-wrap gap-[10px] mb-[8px]">
-                  {formData.designerTypes.map((type) => (
-                    <div
-                      key={type}
-                      className="inline-flex items-center gap-[8px] px-[12px] py-[8px] rounded-[22px] border border-black/20"
-                    >
-                      <span className="whitespace-nowrap text-[16px] font-[600]">{type}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleDesignerTypeToggle(type)}
-                        className=""
-                        aria-label={`${type} 제거`}
-                        title="제거"
-                      >
-                        <X className="w-[14px] h-[14px]" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* 드롭다운 */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="form-input flex items-center justify-between"
-                >
-                  <span className="text-black/50">필요한 디자인 분야를 선택해 주세요. (최대 3개)</span>
-                  {isDropdownOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </button>
-
-                {isDropdownOpen && (
-                  <div className="absolute w-full bg-white rounded-[12px] shadow-[0_4px_20px_0_rgba(0,0,0,0.1)]">
-                    {designerTypeOptions.map((option) => {
-                      const isSelected = formData.designerTypes.includes(option);
-                      const isMaxed = !isSelected && formData.designerTypes.length >= 3;
-
-                      return (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => {
-                            if (!isMaxed) handleDesignerTypeToggle(option);
-                          }}
-                          className={`w-full text-left px-[16px] py-[12px] ${isSelected ? 'bg-gray-100' : ''}`}
-                        >
-                          {option}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+              <Dropdown
+                options={designerTypeOptions}
+                selectedValues={formData.designerTypes}
+                onChange={handleDesignerTypesChange}
+                placeholder="필요한 디자인 분야를 선택해 주세요"
+              />
             </div>
           </div>
 
@@ -290,35 +225,13 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
                 }}
               />
 
-              {/* 파일 업로드 */}
-              {formData.referenceFiles.length > 0 && (
-                <div className="flex flex-wrap gap-3 mt-3">
-                  {formData.referenceFiles.map((file, index) => (
-                    <div key={index} className="relative">
-                      <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden border">
-                        <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-full object-cover" />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(index)}
-                        className="absolute -top-0 -right-0 w-6 h-6 text-white flex items-center justify-center "
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <label className="inline-block px-[24px] py-[6px] mt-[8px] mb-[24px] bg-[#F1F0EFB2] rounded-[8px] hover:bg-[#F1F0EF]">
-                파일 선택
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => handleFileUpload(e.target.files)}
-                />
-              </label>
+              <FileUpload
+                files={formData.referenceFiles}
+                onFileChange={handleFileChange}
+                accept="image/*"
+                multiple={true}
+                buttonText="파일 선택"
+              />
             </div>
           </div>
 
