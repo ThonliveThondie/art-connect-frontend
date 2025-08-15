@@ -1,7 +1,8 @@
-import {ChevronLeft, Plus} from 'lucide-react';
+import {Plus} from 'lucide-react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import Card from './Card';
 import DefaultProfile from '../../assets/images/default-profile-img.svg';
+import BackButton from '../../components/common/buttons/BackButton';
 
 export default function Portfolio({userType}) {
   const navigate = useNavigate();
@@ -72,15 +73,7 @@ export default function Portfolio({userType}) {
 
   return (
     <div className="min-w-[1000px] py-[26px] px-[140px]">
-      {isBrowsingMode && (
-        <button
-          onClick={handleGoBack}
-          className="mb-[32px] flex items-center gap-[4px] text-[14px] text-black/50 hover:text-black"
-        >
-          <ChevronLeft size="14px" />
-          돌아가기
-        </button>
-      )}
+      {isBrowsingMode && <BackButton />}
 
       {/* 프로필 영역 */}
       <div className="flex items-start gap-[32px] mb-[89px]">
