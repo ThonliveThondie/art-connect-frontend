@@ -12,12 +12,128 @@ import Signcomplete from "./membership/가입완료버튼/complete.png";
 import Signcompletehover from "./membership/가입완료버튼/complete_hover.png";
 import Loginunderlineicon from "./membership/로그인버튼/Loginbutton.png";
 import Loginunderlinehovericon from "./membership/로그인버튼/Loginbuttonhover.png";
+import passwordhiddenbutton from "./membership/비밀번호보기버튼/hidden.png";
+import passwordvisiblebutton from "./membership/비밀번호보기버튼/visible.png";
+
 function Signup() {
   const navigate = useNavigate();
   const [userType, setUserType] = useState("designer");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  // 오류 상태 관리
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // 정규식 패턴
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  // 이메일 유효성 검사
+  const validateEmail = (value) => {
+    if (!value.trim()) {
+      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
+    }
+    if (!emailRegex.test(value)) {
+      return "이메일 주소가 올바르지 않아요.";
+    }
+    return "";
+  };
+
+  // 비밀번호 유효성 검사
+  const validatePassword = (value) => {
+    if (!value.trim()) {
+      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
+    }
+    if (value.length < 8) {
+      return "[비밀번호 조건]으로 입력해주세요.";
+    }
+    if (!passwordRegex.test(value)) {
+      return "[비밀번호 조건]으로 입력해주세요.";
+    }
+    return "";
+  };
+
+  // 비밀번호 확인 유효성 검사
+  const validateConfirmPassword = (value, passwordValue) => {
+    if (!value.trim()) {
+      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
+    }
+    if (value !== passwordValue) {
+      return "비밀번호가 일치하지 않아요.";
+    }
+    return "";
+  };
+
+  // 이메일 입력 핸들러
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
+    const error = validateEmail(value);
+    setErrors((prev) => ({ ...prev, email: error }));
+  };
+
+  // 비밀번호 입력 핸들러
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+
+    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
+    const error = validatePassword(value);
+    setErrors((prev) => ({ ...prev, password: error }));
+
+    // 비밀번호 확인도 함께 검사 (비밀번호 확인이 입력되어 있을 때만)
+    if (confirmPassword) {
+      const confirmError = validateConfirmPassword(confirmPassword, value);
+      setErrors((prev) => ({ ...prev, confirmPassword: confirmError }));
+    }
+  };
+
+  // 비밀번호 확인 입력 핸들러
+  const handleConfirmPasswordChange = (e) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+
+    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
+    const error = validateConfirmPassword(value, password);
+    setErrors((prev) => ({ ...prev, confirmPassword: error }));
+  };
+
+  // 폼 제출 핸들러
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // 모든 필드 유효성 검사 (제출 시에는 빈 값도 검사)
+    const emailError = email.trim()
+      ? validateEmail(email)
+      : "이메일 주소가 올바르지 않아요.";
+    const passwordError = password.trim()
+      ? validatePassword(password)
+      : "[비밀번호 조건]으로 입력해주세요.";
+    const confirmPasswordError = confirmPassword.trim()
+      ? validateConfirmPassword(confirmPassword, password)
+      : "비밀번호가 일치하지 않아요.";
+
+    setErrors({
+      email: emailError,
+      password: passwordError,
+      confirmPassword: confirmPasswordError,
+    });
+
+    // 오류가 없으면 회원가입 처리
+    if (!emailError && !passwordError && !confirmPasswordError) {
+      console.log("회원가입 처리:", { userType, email, password });
+      // 실제 회원가입 API 호출 로직
+    }
+  };
 
   return (
     <div className="min-h-screen w-screen bg-white relative">
@@ -39,191 +155,259 @@ function Signup() {
 
         {/* 회원가입 섹션 */}
         <div className="w-full max-w-[514px] bg-white">
-          <div className="px-4 py-[27px] space-y-6">
+          <div className="px-4 py-[27px]">
             {/* 회원가입 폼 */}
-            <div className="space-y-6">
-              {/* 회원 유형 선택 */}
+            <form onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  회원 유형 선택
-                </label>
-                <div className="flex gap-6">
-                  {" "}
-                  {/* gap-4에서 gap-6으로 변경 */}
-                  {/* 회원 유형 선택 버튼 */}
-                  <button
-                    onClick={() => setUserType("designer")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
-                      userType === "designer"
-                        ? "border-gray-800"
-                        : "border-gray-200"
-                    }`}
-                  >
-                    <img
-                      src={DesignerIcon}
-                      alt="디자이너"
-                      className="w-6 h-6"
-                    />
-                    <span
-                      className={`text-gray-900 ${
-                        userType === "designer" ? "font-medium" : "font-normal"
+                {/* 회원 유형 선택 */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    회원 유형 선택
+                  </label>
+                  <div className="flex gap-6">
+                    {/* 회원 유형 선택 버튼 */}
+                    <button
+                      type="button"
+                      onClick={() => setUserType("designer")}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
+                        userType === "designer"
+                          ? "border-gray-800"
+                          : "border-gray-200"
                       }`}
                     >
-                      디자이너
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setUserType("business")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
-                      userType === "business"
-                        ? "border-gray-800"
-                        : "border-gray-200"
-                    }`}
-                  >
-                    <img src={SosangIcon} alt="소상공인" className="w-6 h-6" />
-                    <span
-                      className={`text-gray-900 ${
-                        userType === "business" ? "font-medium" : "font-normal"
+                      <img
+                        src={DesignerIcon}
+                        alt="디자이너"
+                        className="w-6 h-6"
+                      />
+                      <span
+                        className={`text-gray-900 ${
+                          userType === "designer"
+                            ? "font-medium"
+                            : "font-normal"
+                        }`}
+                      >
+                        디자이너
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUserType("business")}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
+                        userType === "business"
+                          ? "border-gray-800"
+                          : "border-gray-200"
                       }`}
                     >
-                      소상공인
-                    </span>
-                  </button>
+                      <img
+                        src={SosangIcon}
+                        alt="소상공인"
+                        className="w-6 h-6"
+                      />
+                      <span
+                        className={`text-gray-900 ${
+                          userType === "business"
+                            ? "font-medium"
+                            : "font-normal"
+                        }`}
+                      >
+                        소상공인
+                      </span>
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* 이메일 */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  이메일
-                </label>
-                {/* 이메일 입력 필드 */}
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@naver.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-0 focus:border-gray-400 outline-none transition-colors"
-                />
-              </div>
-
-              {/* 비밀번호 */}
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  비밀번호
-                </label>
-                <div className="space-y-3">
-                  {/* 비밀번호 입력 필드들 */}
+                {/* 이메일 - 개별 마진 적용 */}
+                <div className="mb-10">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    이메일
+                  </label>
                   <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="비밀번호 입력"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-0 focus:border-gray-400 outline-none transition-colors"
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    placeholder="example@example.com"
+                    className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
+                      errors.email
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:border-gray-400"
+                    }`}
                   />
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="비밀번호 확인"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-0 focus:border-gray-400 outline-none transition-colors"
-                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1 ml-1">
+                      {errors.email}
+                    </p>
+                  )}
                 </div>
-              </div>
 
-              {/* 가입하기 버튼 */}
-              <button type="submit" className="w-full group">
-                <img
-                  src={Signcomplete}
-                  alt="가입하기"
-                  className="w-full group-hover:hidden"
-                />
-                <img
-                  src={Signcompletehover}
-                  alt="가입하기"
-                  className="w-full hidden group-hover:block"
-                />
-              </button>
+                {/* 비밀번호 */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <label
+                      htmlFor="password"
+                      className="text-sm font-semibold text-gray-700"
+                    >
+                      비밀번호
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setPasswordVisible(!passwordVisible)}
+                      className="focus:outline-none"
+                    >
+                      <img
+                        src={
+                          passwordVisible
+                            ? passwordvisiblebutton
+                            : passwordhiddenbutton
+                        }
+                        alt={
+                          passwordVisible ? "비밀번호 보임" : "비밀번호 숨김"
+                        }
+                        className="w-6 h-6"
+                      />
+                    </button>
+                  </div>
+                  <div className="space-y-[7px]">
+                    {/* 비밀번호 입력 필드 */}
+                    <input
+                      id="password"
+                      type={passwordVisible ? "text" : "password"}
+                      value={password}
+                      onChange={handlePasswordChange}
+                      placeholder="비밀번호 입력/조건 설정"
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
+                        errors.password
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:border-gray-400"
+                      }`}
+                    />
+                    {errors.password && (
+                      <p className="text-red-500 text-sm mt-1 ml-1">
+                        {errors.password}
+                      </p>
+                    )}
 
-              {/* 소셜 로그인 */}
-              <div className="text-center">
-                <p className="text-sm font-semibold text-gray-600 mb-4">
-                  {" "}
-                  {/* font-medium에서 font-semibold로 변경 */}
-                  또는 다음으로 시작하기
-                </p>
-                <div className="flex justify-center gap-[10px]">
-                  {/* Google */}
-                  <button className="w-[52px] h-[52px] flex items-center justify-center group">
-                    <img
-                      src={googleIcon}
-                      alt="Google"
-                      className="w-[40px] h-[40px] group-hover:hidden"
+                    {/* 비밀번호 확인 입력 필드 */}
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={handleConfirmPasswordChange}
+                      placeholder="비밀번호 확인"
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
+                        errors.confirmPassword
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:border-gray-400"
+                      }`}
                     />
-                    <img
-                      src={googleHoverIcon}
-                      alt="Google"
-                      className="w-[40px] h-[40px] hidden group-hover:block"
-                    />
-                  </button>
-
-                  {/* KakaoTalk */}
-                  <button className="w-[52px] h-[52px] flex items-center justify-center group">
-                    <img
-                      src={kakaoIcon}
-                      alt="Kakao"
-                      className="w-[40px] h-[40px] group-hover:hidden"
-                    />
-                    <img
-                      src={kakaoHoverIcon}
-                      alt="Kakao"
-                      className="w-[40px] h-[40px] hidden group-hover:block"
-                    />
-                  </button>
-
-                  {/* Naver */}
-                  <button className="w-[52px] h-[52px] flex items-center justify-center group">
-                    <img
-                      src={naverIcon}
-                      alt="Naver"
-                      className="w-[40px] h-[40px] group-hover:hidden"
-                    />
-                    <img
-                      src={naverHoverIcon}
-                      alt="Naver"
-                      className="w-[40px] h-[40px] hidden group-hover:block"
-                    />
-                  </button>
+                    {errors.confirmPassword && (
+                      <p className="text-red-500 text-sm mt-1 ml-1">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* 로그인 링크 */}
-              <div className="text-center flex items-center justify-center gap-2">
-                <p className="text-sm font-normal text-gray-600">
-                  이미 회원이신가요?
-                </p>
-                <button className="group" onClick={() => navigate("/login")}>
+                {/* 가입하기 버튼 */}
+                <button type="submit" className="w-full group mb-6">
                   <img
-                    src={Loginunderlineicon}
-                    alt="로그인"
-                    className="h-[22px] group-hover:hidden"
+                    src={Signcomplete}
+                    alt="가입하기"
+                    className="w-full group-hover:hidden"
                   />
                   <img
-                    src={Loginunderlinehovericon}
-                    alt="로그인"
-                    className="h-[22px] hidden group-hover:block"
+                    src={Signcompletehover}
+                    alt="가입하기"
+                    className="w-full hidden group-hover:block"
                   />
                 </button>
+
+                {/* 소셜 로그인 */}
+                <div className="text-center mb-6">
+                  <p className="text-sm font-semibold text-gray-600 mb-4">
+                    또는 다음으로 시작하기
+                  </p>
+                  <div className="flex justify-center gap-[10px]">
+                    {/* Google */}
+                    <button
+                      type="button"
+                      className="w-[52px] h-[52px] flex items-center justify-center group"
+                    >
+                      <img
+                        src={googleIcon}
+                        alt="Google"
+                        className="w-[40px] h-[40px] group-hover:hidden"
+                      />
+                      <img
+                        src={googleHoverIcon}
+                        alt="Google"
+                        className="w-[40px] h-[40px] hidden group-hover:block"
+                      />
+                    </button>
+
+                    {/* KakaoTalk */}
+                    <button
+                      type="button"
+                      className="w-[52px] h-[52px] flex items-center justify-center group"
+                    >
+                      <img
+                        src={kakaoIcon}
+                        alt="Kakao"
+                        className="w-[40px] h-[40px] group-hover:hidden"
+                      />
+                      <img
+                        src={kakaoHoverIcon}
+                        alt="Kakao"
+                        className="w-[40px] h-[40px] hidden group-hover:block"
+                      />
+                    </button>
+
+                    {/* Naver */}
+                    <button
+                      type="button"
+                      className="w-[52px] h-[52px] flex items-center justify-center group"
+                    >
+                      <img
+                        src={naverIcon}
+                        alt="Naver"
+                        className="w-[40px] h-[40px] group-hover:hidden"
+                      />
+                      <img
+                        src={naverHoverIcon}
+                        alt="Naver"
+                        className="w-[40px] h-[40px] hidden group-hover:block"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* 로그인 링크 */}
+                <div className="text-center flex items-center justify-center gap-2">
+                  <p className="text-sm font-normal text-gray-600">
+                    이미 회원이신가요?
+                  </p>
+                  <button
+                    type="button"
+                    className="group"
+                    onClick={() => navigate("/login")}
+                  >
+                    <img
+                      src={Loginunderlineicon}
+                      alt="로그인"
+                      className="h-[22px] group-hover:hidden"
+                    />
+                    <img
+                      src={Loginunderlinehovericon}
+                      alt="로그인"
+                      className="h-[22px] hidden group-hover:block"
+                    />
+                  </button>
+                </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
