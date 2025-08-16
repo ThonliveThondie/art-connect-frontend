@@ -25,7 +25,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout userType={userType} />}>
-          {userType === 'business' ? (
+          {userType === "business" ? (
             <Route index element={<Navigate to="/dashboard/ai" replace />} />
           ) : (
             <Route index element={<Navigate to="/new-project" replace />} />
@@ -52,7 +52,12 @@ const App = () => {
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
 
           {/* 404 */}
-          <Route path="*" element={<div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>} />
+          <Route
+            path="*"
+            element={
+              <div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>
+            }
+          />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
