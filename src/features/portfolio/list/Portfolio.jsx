@@ -1,16 +1,13 @@
 import {Plus} from 'lucide-react';
-import {useNavigate, useLocation} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import Card from './Card';
 import DefaultProfile from '../../../assets/images/default-profile-img.svg';
 import BackButton from '../../../components/common/buttons/BackButton';
 
 export default function Portfolio({userType}) {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const viewMode = location.state?.viewMode || 'own'; // 'own' 또는 'browse'
-  const designerId = location.state?.designerId;
-  const isBrowsingMode = userType === 'business' || viewMode === 'browse';
+  const isBrowsingMode = userType === 'business';
 
   const handleGoBack = () => {
     navigate(isBrowsingMode ? '/dashboard/ai' : -1);

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import BackButton from '@/components/common/buttons/BackButton';
 import {MoreHorizontal} from 'lucide-react';
 import MySwiper from '@/components/common/swiper/MySwiper';
@@ -6,10 +6,10 @@ import MySwiper from '@/components/common/swiper/MySwiper';
 import img1 from '../../../assets/samples/image1.jpg';
 import img2 from '../../../assets/samples/image2.jpg';
 
-export default function PortfolioDetail({designerId}) {
+export default function PortfolioDetail({}) {
   const images = [img1, img2, img1, img2];
 
-  const [data, setData] = useState({
+  const data = {
     title: 'Sage Petal 로고 & 명함 디자인',
     designerName: 'suum',
     categories: ['브랜딩', '그래픽'],
@@ -21,7 +21,7 @@ export default function PortfolioDetail({designerId}) {
 명함 앞면에는 로고와 대표자 정보를 간결하게 배치하고, 뒷면에는 샵의 슬로건과 핵심 키워드를 넣어 브랜드 메시지를 강화했습니다.
 
 최종 산출물은 실제 인쇄 후에도 색상과 질감이 유지될 수 있도록 고해상도 파일과 인쇄 가이드라인을 함께 제공했습니다.`,
-  });
+  };
 
   return (
     <div className="min-w-[1000px] py-[26px] px-[140px]">
