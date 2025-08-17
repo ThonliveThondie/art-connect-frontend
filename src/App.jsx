@@ -12,20 +12,20 @@ import ProfileBusiness from './features/profile/ProfileBusiness.jsx';
 import RevenueHistory from './features/revenue/RevenueHistory.jsx';
 import ProfileArtist from './features/profile/ProfileArtist.jsx';
 import Portfolio from './features/portfolio/list/Portfolio.jsx';
-import OngoingProjects from './features/project/OngoingProjects.jsx';
-import CompletedProjects from './features/project/CompletedProjects.jsx';
+import OngoingProjects from './features/project/list/ongoing/OngoingProjects';
+import CompletedProjects from './features/project/list/completed/CompletedProjects.jsx';
 import PortfolioAdd from './features/portfolio/add/PortfolioAdd.jsx';
 import Login from './Login.jsx';
 import Signup from './Signup.jsx';
 
 const App = () => {
-  const userType = 'artist'; // artist로 변경하면 아티스트 홈으로 리다이렉트
+  const userType = 'business'; // artist로 변경하면 아티스트 홈으로 리다이렉트
 
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout userType={userType} />}>
-          {userType === "business" ? (
+          {userType === 'business' ? (
             <Route index element={<Navigate to="/dashboard/ai" replace />} />
           ) : (
             <Route index element={<Navigate to="/new-project" replace />} />
@@ -52,12 +52,7 @@ const App = () => {
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
 
           {/* 404 */}
-          <Route
-            path="*"
-            element={
-              <div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>
-            }
-          />
+          <Route path="*" element={<div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
