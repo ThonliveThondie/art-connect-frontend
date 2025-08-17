@@ -19,7 +19,7 @@ import Login from './Login.jsx';
 import Signup from './Signup.jsx';
 
 const App = () => {
-  const userType = 'business'; // artist로 변경하면 아티스트 홈으로 리다이렉트
+  const userType = 'artist'; // artist로 변경하면 아티스트 홈으로 리다이렉트
 
   return (
     <BrowserRouter>
@@ -35,18 +35,19 @@ const App = () => {
 
           <Route path="/dashboard/ai" element={<AIInput />} />
           <Route path="/dashboard/ai/result" element={<AIResult />} />
-          <Route path="/portfolio/detail" element={<PortfolioDetail />} />
 
           <Route path="/new-project" element={<NewProject />} />
           <Route path="/no-project" element={<NoProject />} />
-          <Route path="/portfolio" element={<Portfolio userType={userType} />} />
-          <Route path="/portfolio/add" element={<PortfolioAdd />} />
           <Route path="/profile/artist" element={<ProfileArtist />} />
           <Route path="/revenue" element={<RevenueHistory />} />
 
           <Route path="/store-management" element={<StoreManagement />} />
           <Route path="/payment" element={<PaymentHistory />} />
           <Route path="/profile/business" element={<ProfileBusiness />} />
+
+          <Route path="/portfolio/add" element={<PortfolioAdd />} />
+          <Route path="/portfolio/:id" element={<PortfolioDetail />} />
+          <Route path="/portfolio" element={<Portfolio userType={userType} />} />
 
           <Route path="/projects/completed" element={<CompletedProjects />} />
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
