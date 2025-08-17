@@ -34,10 +34,10 @@ export default function FileUpload({
               <button
                 type="button"
                 onClick={() => removeFile(index)}
-                className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                className="absolute -top-[0px] -right-[0px] w-6 h-6 text-white"
                 aria-label={`${file.name} 파일 삭제`}
               >
-                <X size={14} />
+                <X size={18} strokeWidth={3} />
               </button>
             </div>
           ))}
@@ -45,7 +45,7 @@ export default function FileUpload({
       )}
 
       {/* 파일 선택 버튼 */}
-      <label className="inline-block px-[24px] py-[6px] mt-[8px] mb-[24px] bg-[#F1F0EFB2] rounded-[8px] hover:bg-[#F1F0EF] cursor-pointer">
+      <label className="inline-block px-[24px] py-[6px] mt-[8px] mb-[24px] bg-[#F1F0EFB2] font-[700] rounded-[8px] hover:bg-[#F1F0EF] cursor-pointer">
         {buttonText}
         <input
           type="file"
