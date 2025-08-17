@@ -75,7 +75,7 @@ export default function PortfolioAdd() {
             onFileChange={handleImagesChange}
             accept="image/*"
             multiple={true}
-            buttonText="파일"
+            buttonText="파일 선택"
           />
         </div>
 
