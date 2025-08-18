@@ -15,6 +15,7 @@ import Portfolio from './features/portfolio/list/Portfolio.jsx';
 import OngoingProjects from './features/project/list/ongoing/OngoingProjects';
 import CompletedProjects from './features/project/list/completed/CompletedProjects.jsx';
 import PortfolioAdd from './features/portfolio/add/PortfolioAdd.jsx';
+import ProjectDetail from './features/project/detail/ProjectDetail';
 import Login from './Login.jsx';
 import Signup from './Signup.jsx';
 
@@ -51,6 +52,7 @@ const App = () => {
 
           <Route path="/projects/completed" element={<CompletedProjects />} />
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
+          <Route path="/projects/:projectId" element={<ProjectDetail />} />
 
           {/* 404 */}
           <Route path="*" element={<div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>} />

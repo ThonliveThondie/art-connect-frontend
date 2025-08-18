@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import ListCard from './ListCard';
 import StatusBadge from '@/components/common/badge/StatusBadge'; // 경로 확인: /badge/ 제거
 
@@ -16,6 +17,11 @@ const initialProjects = [
 
 export default function OngoingProjects() {
   const [projects] = useState(initialProjects);
+  const navigate = useNavigate();
+
+  const handleCardClick = (projectId) => {
+    navigate(`/projects/${projectId}`);
+  };
 
   return (
     <div className="px-[120px] py-[26px] min-w-[1000px]">
@@ -26,13 +32,13 @@ export default function OngoingProjects() {
 
       <div className="py-[20px] space-y-4">
         {projects.map((project) => (
-          <ListCard
-            key={project.id}
-            title={project.title}
-            designerName={project.designerName}
-            status={project.status}
-            renderStatus={() => <StatusBadge status={project.status} />}
-          />
+          <div key={project.id} onClick={() => handleCardClick(project.id)}>
+            <ListCard
+              title={project.title}
+              designerName={project.designerName}
+              renderStatus={() => <StatusBadge status={project.status} />}
+            />
+          </div>
         ))}
       </div>
     </div>

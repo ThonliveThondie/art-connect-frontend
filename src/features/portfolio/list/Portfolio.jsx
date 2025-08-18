@@ -9,16 +9,12 @@ export default function Portfolio({userType}) {
 
   const isBrowsingMode = userType === 'business';
 
-  const handleGoBack = () => {
-    navigate(isBrowsingMode ? '/dashboard/ai' : -1);
-  };
-
   const handleAddPortfolio = () => {
     navigate('/portfolio/add');
   };
 
   const handleCardClick = (portfolioId) => {
-    navigate('/portfolio/detail', {state: {portfolioId}});
+    navigate(`/portfolio/${portfolioId}`);
   };
 
   // 프로필 샘플 데이터
