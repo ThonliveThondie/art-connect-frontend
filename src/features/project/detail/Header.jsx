@@ -27,7 +27,7 @@ export default function Header({status = 'pending', title, company, designer, co
           </div>
           <div className="flex items-center">
             <span className="text-gray-400 w-[80px]">계약일</span>
-            <span className="font-semibold">{contractDate}</span>
+            <span>{contractDate}</span>
           </div>
         </div>
       </div>
