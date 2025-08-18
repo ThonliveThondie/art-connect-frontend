@@ -1,75 +1,74 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import googleIcon from "./membership/icon/default/구글.png";
-import googleHoverIcon from "./membership/icon/hover/구글.png";
-import naverIcon from "./membership/icon/default/네이버.png";
-import naverHoverIcon from "./membership/icon/hover/네이버.png";
-import kakaoIcon from "./membership/icon/default/카카오.png";
-import kakaoHoverIcon from "./membership/icon/hover/카카오.png";
-import DesignerIcon from "./membership/회원유형선택버튼/designer.png";
-import SosangIcon from "./membership/회원유형선택버튼/sosang.png";
-import Signcomplete from "./membership/가입완료버튼/complete.png";
-import Signcompletehover from "./membership/가입완료버튼/complete_hover.png";
-import Loginunderlineicon from "./membership/로그인버튼/Loginbutton.png";
-import Loginunderlinehovericon from "./membership/로그인버튼/Loginbuttonhover.png";
-import passwordhiddenbutton from "./membership/비밀번호보기버튼/hidden.png";
-import passwordvisiblebutton from "./membership/비밀번호보기버튼/visible.png";
+import React, {useState, useMemo} from 'react';
+import {useNavigate} from 'react-router-dom';
+import googleIcon from './membership/icon/default/구글.png';
+import googleHoverIcon from './membership/icon/hover/구글.png';
+import naverIcon from './membership/icon/default/네이버.png';
+import naverHoverIcon from './membership/icon/hover/네이버.png';
+import kakaoIcon from './membership/icon/default/카카오.png';
+import kakaoHoverIcon from './membership/icon/hover/카카오.png';
+import DesignerIcon from './membership/회원유형선택버튼/designer.png';
+import SosangIcon from './membership/회원유형선택버튼/sosang.png';
+import Signcomplete from './membership/가입완료버튼/complete.png';
+import Signcompletehover from './membership/가입완료버튼/complete_hover.png';
+import Loginunderlineicon from './membership/로그인버튼/Loginbutton.png';
+import Loginunderlinehovericon from './membership/로그인버튼/Loginbuttonhover.png';
+import passwordhiddenbutton from './membership/비밀번호보기버튼/hidden.png';
+import passwordvisiblebutton from './membership/비밀번호보기버튼/visible.png';
 
 function Signup() {
   const navigate = useNavigate();
-  const [userType, setUserType] = useState("designer");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userType, setUserType] = useState('designer');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   // 오류 상태 관리
   const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
   // 정규식 패턴
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   // 이메일 유효성 검사
   const validateEmail = (value) => {
     if (!value.trim()) {
-      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
+      return ''; // 빈 값일 때는 오류 메시지 표시하지 않음
     }
     if (!emailRegex.test(value)) {
-      return "이메일 주소가 올바르지 않아요.";
+      return '이메일 주소가 올바르지 않아요.';
     }
-    return "";
+    return '';
   };
 
   // 비밀번호 유효성 검사
   const validatePassword = (value) => {
     if (!value.trim()) {
-      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
+      return ''; // 빈 값일 때는 오류 메시지 표시하지 않음
     }
-    if (value.length < 8) {
-      return "[비밀번호 조건]으로 입력해주세요.";
-    }
-    if (!passwordRegex.test(value)) {
-      return "[비밀번호 조건]으로 입력해주세요.";
-    }
-    return "";
+    return '';
   };
 
   // 비밀번호 확인 유효성 검사
   const validateConfirmPassword = (value, passwordValue) => {
     if (!value.trim()) {
-      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
+      return ''; // 빈 값일 때는 오류 메시지 표시하지 않음
     }
     if (value !== passwordValue) {
-      return "비밀번호가 일치하지 않아요.";
+      return '비밀번호가 일치하지 않아요.';
     }
-    return "";
+    return '';
   };
+
+  const formValid = useMemo(() => {
+    const emailOk = emailRegex.test(email.trim());
+    const passwordOk = password.trim().length > 0; // 조건 삭제: 길이만 1자 이상
+    const confirmOk = confirmPassword.trim().length > 0 && confirmPassword === password;
+    return emailOk && passwordOk && confirmOk;
+  }, [email, password, confirmPassword]);
 
   // 이메일 입력 핸들러
   const handleEmailChange = (e) => {
@@ -78,7 +77,7 @@ function Signup() {
 
     // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validateEmail(value);
-    setErrors((prev) => ({ ...prev, email: error }));
+    setErrors((prev) => ({...prev, email: error}));
   };
 
   // 비밀번호 입력 핸들러
@@ -88,12 +87,12 @@ function Signup() {
 
     // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validatePassword(value);
-    setErrors((prev) => ({ ...prev, password: error }));
+    setErrors((prev) => ({...prev, password: error}));
 
     // 비밀번호 확인도 함께 검사 (비밀번호 확인이 입력되어 있을 때만)
     if (confirmPassword) {
       const confirmError = validateConfirmPassword(confirmPassword, value);
-      setErrors((prev) => ({ ...prev, confirmPassword: confirmError }));
+      setErrors((prev) => ({...prev, confirmPassword: confirmError}));
     }
   };
 
@@ -104,44 +103,39 @@ function Signup() {
 
     // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validateConfirmPassword(value, password);
-    setErrors((prev) => ({ ...prev, confirmPassword: error }));
+    setErrors((prev) => ({...prev, confirmPassword: error}));
   };
 
   // 폼 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 모든 필드 유효성 검사 (제출 시에는 빈 값도 검사)
-    const emailError = email.trim()
-      ? validateEmail(email)
-      : "이메일 주소가 올바르지 않아요.";
-    const passwordError = password.trim()
-      ? validatePassword(password)
-      : "[비밀번호 조건]으로 입력해주세요.";
+    // [수정] 제출 시 에러 메시지(비밀번호 조건 문구 삭제)
+    const emailError = email.trim() ? validateEmail(email) : '이메일 주소가 올바르지 않아요.';
+    const passwordError = password.trim() ? '' : '비밀번호를 입력하세요.'; // [수정] 옛 문구([비밀번호 조건]) 제거
     const confirmPasswordError = confirmPassword.trim()
       ? validateConfirmPassword(confirmPassword, password)
-      : "비밀번호가 일치하지 않아요.";
+      : '비밀번호가 일치하지 않아요.'; // 비어있을 때도 제출 시에는 요구
 
     setErrors({
       email: emailError,
       password: passwordError,
       confirmPassword: confirmPasswordError,
     });
+    if (!(formValid && !emailError && !passwordError && !confirmPasswordError)) {
+      return;
+    }
 
     // 오류가 없으면 회원가입 처리
-    if (!emailError && !passwordError && !confirmPasswordError) {
-      console.log("회원가입 처리:", { userType, email, password });
-      // 실제 회원가입 API 호출 로직
-    }
+    console.log('회원가입 처리:', {userType, email, password});
+    // 실제 회원가입 API 호출 로직
   };
 
   return (
     <div className="min-h-screen w-screen bg-white relative">
       {/* 로고 - 왼쪽 상단 고정 */}
       <div className="absolute top-8 left-8 z-10">
-        <h1 className="text-[28px] font-black font-['Pretendard_Variable'] leading-[38px]">
-          ArtConnect
-        </h1>
+        <h1 className="text-[28px] font-black font-['Pretendard_Variable'] leading-[38px]">ArtConnect</h1>
       </div>
 
       {/* 중앙 컨텐츠 컨테이너 */}
@@ -149,7 +143,7 @@ function Signup() {
         {/* 메인 제목 */}
         <div className="mb-8">
           <h2 className="text-[28px] font-extrabold font-['Pretendard_Variable'] leading-[38px] text-center whitespace-pre-line">
-            {"디자이너와 소상공인을 잇는 공간,\n아트커넥트에서 만나보세요!"}
+            {'디자이너와 소상공인을 잇는 공간,\n아트커넥트에서 만나보세요!'}
           </h2>
         </div>
 
@@ -161,56 +155,30 @@ function Signup() {
               <div>
                 {/* 회원 유형 선택 */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    회원 유형 선택
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">회원 유형 선택</label>
                   <div className="flex gap-6">
                     {/* 회원 유형 선택 버튼 */}
                     <button
                       type="button"
-                      onClick={() => setUserType("designer")}
+                      onClick={() => setUserType('designer')}
                       className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
-                        userType === "designer"
-                          ? "border-gray-800"
-                          : "border-gray-200"
+                        userType === 'designer' ? 'border-gray-800' : 'border-gray-200'
                       }`}
                     >
-                      <img
-                        src={DesignerIcon}
-                        alt="디자이너"
-                        className="w-6 h-6"
-                      />
-                      <span
-                        className={`text-gray-900 ${
-                          userType === "designer"
-                            ? "font-medium"
-                            : "font-normal"
-                        }`}
-                      >
+                      <img src={DesignerIcon} alt="디자이너" className="w-6 h-6" />
+                      <span className={`text-gray-900 ${userType === 'designer' ? 'font-medium' : 'font-normal'}`}>
                         디자이너
                       </span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setUserType("business")}
+                      onClick={() => setUserType('business')}
                       className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
-                        userType === "business"
-                          ? "border-gray-800"
-                          : "border-gray-200"
+                        userType === 'business' ? 'border-gray-800' : 'border-gray-200'
                       }`}
                     >
-                      <img
-                        src={SosangIcon}
-                        alt="소상공인"
-                        className="w-6 h-6"
-                      />
-                      <span
-                        className={`text-gray-900 ${
-                          userType === "business"
-                            ? "font-medium"
-                            : "font-normal"
-                        }`}
-                      >
+                      <img src={SosangIcon} alt="소상공인" className="w-6 h-6" />
+                      <span className={`text-gray-900 ${userType === 'business' ? 'font-medium' : 'font-normal'}`}>
                         소상공인
                       </span>
                     </button>
@@ -219,10 +187,7 @@ function Signup() {
 
                 {/* 이메일 - 개별 마진 적용 */}
                 <div className="mb-10">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
-                  >
+                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                     이메일
                   </label>
                   <input
@@ -232,25 +197,16 @@ function Signup() {
                     onChange={handleEmailChange}
                     placeholder="example@example.com"
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
-                      errors.email
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:border-gray-400"
+                      errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-gray-400'
                     }`}
                   />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1 ml-1">
-                      {errors.email}
-                    </p>
-                  )}
+                  {errors.email && <p className="text-red-500 text-sm mt-1 ml-1">{errors.email}</p>}
                 </div>
 
                 {/* 비밀번호 */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
-                    <label
-                      htmlFor="password"
-                      className="text-sm font-semibold text-gray-700"
-                    >
+                    <label htmlFor="password" className="text-sm font-semibold text-gray-700">
                       비밀번호
                     </label>
                     <button
@@ -259,14 +215,8 @@ function Signup() {
                       className="focus:outline-none"
                     >
                       <img
-                        src={
-                          passwordVisible
-                            ? passwordvisiblebutton
-                            : passwordhiddenbutton
-                        }
-                        alt={
-                          passwordVisible ? "비밀번호 보임" : "비밀번호 숨김"
-                        }
+                        src={passwordVisible ? passwordvisiblebutton : passwordhiddenbutton}
+                        alt={passwordVisible ? '비밀번호 보임' : '비밀번호 숨김'}
                         className="w-6 h-6"
                       />
                     </button>
@@ -275,21 +225,17 @@ function Signup() {
                     {/* 비밀번호 입력 필드 */}
                     <input
                       id="password"
-                      type={passwordVisible ? "text" : "password"}
+                      type={passwordVisible ? 'text' : 'password'}
                       value={password}
                       onChange={handlePasswordChange}
-                      placeholder="비밀번호 입력/조건 설정"
+                      placeholder="비밀번호 입력"
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
                         errors.password
-                          ? "border-red-500 focus:border-red-500"
-                          : "border-gray-300 focus:border-gray-400"
+                          ? 'border-red-500 focus:border-red-500'
+                          : 'border-gray-300 focus:border-gray-400'
                       }`}
                     />
-                    {errors.password && (
-                      <p className="text-red-500 text-sm mt-1 ml-1">
-                        {errors.password}
-                      </p>
-                    )}
+                    {errors.password && <p className="text-red-500 text-sm mt-1 ml-1">{errors.password}</p>}
 
                     {/* 비밀번호 확인 입력 필드 */}
                     <input
@@ -299,111 +245,65 @@ function Signup() {
                       placeholder="비밀번호 확인"
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
                         errors.confirmPassword
-                          ? "border-red-500 focus:border-red-500"
-                          : "border-gray-300 focus:border-gray-400"
+                          ? 'border-red-500 focus:border-red-500'
+                          : 'border-gray-300 focus:border-gray-400'
                       }`}
                     />
                     {errors.confirmPassword && (
-                      <p className="text-red-500 text-sm mt-1 ml-1">
-                        {errors.confirmPassword}
-                      </p>
+                      <p className="text-red-500 text-sm mt-1 ml-1">{errors.confirmPassword}</p>
                     )}
                   </div>
                 </div>
 
                 {/* 가입하기 버튼 */}
-                <button type="submit" className="w-full group mb-6">
+                <button
+                  type="submit"
+                  disabled={!formValid}
+                  aria-disabled={!formValid}
+                  className={`w-full group mb-6 ${!formValid ? 'opacity-50 pointer-events-none' : ''}`} // [추가] 비활성화 시 호버 차단
+                >
                   <img
                     src={Signcomplete}
                     alt="가입하기"
-                    className="w-full group-hover:hidden"
+                    className={`w-full ${formValid ? 'group-hover:hidden' : ''}`}
                   />
                   <img
                     src={Signcompletehover}
                     alt="가입하기"
-                    className="w-full hidden group-hover:block"
+                    className={`w-full hidden ${formValid ? 'group-hover:block' : ''}`}
                   />
                 </button>
 
                 {/* 소셜 로그인 */}
                 <div className="text-center mb-6">
-                  <p className="text-sm font-semibold text-gray-600 mb-4">
-                    또는 다음으로 시작하기
-                  </p>
+                  <p className="text-sm font-semibold text-gray-600 mb-4">또는 다음으로 시작하기</p>
                   <div className="flex justify-center gap-[10px]">
                     {/* Google */}
-                    <button
-                      type="button"
-                      className="w-[52px] h-[52px] flex items-center justify-center group"
-                    >
-                      <img
-                        src={googleIcon}
-                        alt="Google"
-                        className="w-[40px] h-[40px] group-hover:hidden"
-                      />
-                      <img
-                        src={googleHoverIcon}
-                        alt="Google"
-                        className="w-[40px] h-[40px] hidden group-hover:block"
-                      />
+                    <button type="button" className="w-[52px] h-[52px] flex items-center justify-center group">
+                      <img src={googleIcon} alt="Google" className="w-[40px] h-[40px] group-hover:hidden" />
+                      <img src={googleHoverIcon} alt="Google" className="w-[40px] h-[40px] hidden group-hover:block" />
                     </button>
 
                     {/* KakaoTalk */}
-                    <button
-                      type="button"
-                      className="w-[52px] h-[52px] flex items-center justify-center group"
-                    >
-                      <img
-                        src={kakaoIcon}
-                        alt="Kakao"
-                        className="w-[40px] h-[40px] group-hover:hidden"
-                      />
-                      <img
-                        src={kakaoHoverIcon}
-                        alt="Kakao"
-                        className="w-[40px] h-[40px] hidden group-hover:block"
-                      />
+                    <button type="button" className="w-[52px] h-[52px] flex items-center justify-center group">
+                      <img src={kakaoIcon} alt="Kakao" className="w-[40px] h-[40px] group-hover:hidden" />
+                      <img src={kakaoHoverIcon} alt="Kakao" className="w-[40px] h-[40px] hidden group-hover:block" />
                     </button>
 
                     {/* Naver */}
-                    <button
-                      type="button"
-                      className="w-[52px] h-[52px] flex items-center justify-center group"
-                    >
-                      <img
-                        src={naverIcon}
-                        alt="Naver"
-                        className="w-[40px] h-[40px] group-hover:hidden"
-                      />
-                      <img
-                        src={naverHoverIcon}
-                        alt="Naver"
-                        className="w-[40px] h-[40px] hidden group-hover:block"
-                      />
+                    <button type="button" className="w-[52px] h-[52px] flex items-center justify-center group">
+                      <img src={naverIcon} alt="Naver" className="w-[40px] h-[40px] group-hover:hidden" />
+                      <img src={naverHoverIcon} alt="Naver" className="w-[40px] h-[40px] hidden group-hover:block" />
                     </button>
                   </div>
                 </div>
 
                 {/* 로그인 링크 */}
                 <div className="text-center flex items-center justify-center gap-2">
-                  <p className="text-sm font-normal text-gray-600">
-                    이미 회원이신가요?
-                  </p>
-                  <button
-                    type="button"
-                    className="group"
-                    onClick={() => navigate("/login")}
-                  >
-                    <img
-                      src={Loginunderlineicon}
-                      alt="로그인"
-                      className="h-[22px] group-hover:hidden"
-                    />
-                    <img
-                      src={Loginunderlinehovericon}
-                      alt="로그인"
-                      className="h-[22px] hidden group-hover:block"
-                    />
+                  <p className="text-sm font-normal text-gray-600">이미 회원이신가요?</p>
+                  <button type="button" className="group" onClick={() => navigate('/login')}>
+                    <img src={Loginunderlineicon} alt="로그인" className="h-[22px] group-hover:hidden" />
+                    <img src={Loginunderlinehovericon} alt="로그인" className="h-[22px] hidden group-hover:block" />
                   </button>
                 </div>
               </div>

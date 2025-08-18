@@ -1,74 +1,69 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import googleIcon from "./membership/icon/default/구글.png";
-import googleHoverIcon from "./membership/icon/hover/구글.png";
-import naverIcon from "./membership/icon/default/네이버.png";
-import naverHoverIcon from "./membership/icon/hover/네이버.png";
-import kakaoIcon from "./membership/icon/default/카카오.png";
-import kakaoHoverIcon from "./membership/icon/hover/카카오.png";
-import Signinbutton from "./membership/로그인페이지로그인버튼/login.png";
-import emailbutton from "./membership/이메일/회원가입버튼/email.png";
-import emailbuttonhover from "./membership/이메일/회원가입버튼/emailhover.png";
-import Signupunderlineicon from "./membership/회원가입/signinunderline.png";
-import passwordhiddenbutton from "./membership/비밀번호보기버튼/hidden.png";
-import passwordvisiblebutton from "./membership/비밀번호보기버튼/visible.png";
+import React, {useState, useMemo} from 'react';
+import {useNavigate} from 'react-router-dom';
+import googleIcon from './membership/icon/default/구글.png';
+import googleHoverIcon from './membership/icon/hover/구글.png';
+import naverIcon from './membership/icon/default/네이버.png';
+import naverHoverIcon from './membership/icon/hover/네이버.png';
+import kakaoIcon from './membership/icon/default/카카오.png';
+import kakaoHoverIcon from './membership/icon/hover/카카오.png';
+import Signinbutton from './membership/로그인페이지로그인버튼/login.png';
+import Signinbuttonhover from './membership/로그인페이지로그인버튼/login_hover.png';
+import emailbutton from './membership/이메일/회원가입버튼/email.png';
+import emailbuttonhover from './membership/이메일/회원가입버튼/emailhover.png';
+import Signupunderlineicon from './membership/회원가입/signinunderline.png';
+import passwordhiddenbutton from './membership/비밀번호보기버튼/hidden.png';
+import passwordvisiblebutton from './membership/비밀번호보기버튼/visible.png';
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   // 오류 상태 관리
   const [errors, setErrors] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   // 정규식 패턴 (로그인용 - 더 간단한 검증)
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // [추가] 폼 전체 유효 여부
+  const formValid = useMemo(() => {
+    const emailOk = emailRegex.test(email.trim());
+    const passwordOk = password.trim().length > 0;
+    return emailOk && passwordOk;
+  }, [email, password]);
+
   // 이메일 유효성 검사 (로그인용)
   const validateEmail = (value) => {
-    if (!value.trim()) {
-      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
-    }
-    if (!emailRegex.test(value)) {
-      return "이메일 주소가 올바르지 않아요.";
-    }
-    return "";
+    if (!value.trim()) return ''; // 빈 값일 때는 오류 메시지 미표시
+    if (!emailRegex.test(value)) return '이메일 주소가 올바르지 않아요.';
+    return '';
   };
 
   // 비밀번호 유효성 검사 (로그인용 - 간단한 검증)
   const validatePassword = (value) => {
-    if (!value.trim()) {
-      return ""; // 빈 값일 때는 오류 메시지 표시하지 않음
-    }
-    if (value.length < 1) {
-      // 로그인은 입력만 확인
-      return "비밀번호를 입력해주세요.";
-    }
-    return "";
+    if (!value.trim()) return ''; // 빈 값일 때는 오류 메시지 미표시
+    if (value.length < 1) return '비밀번호를 입력해주세요.';
+    return '';
   };
 
   // 이메일 입력 핸들러
   const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
-
-    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validateEmail(value);
-    setErrors((prev) => ({ ...prev, email: error }));
+    setErrors((prev) => ({...prev, email: error}));
   };
 
   // 비밀번호 입력 핸들러
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
-
-    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validatePassword(value);
-    setErrors((prev) => ({ ...prev, password: error }));
+    setErrors((prev) => ({...prev, password: error}));
   };
 
   // 폼 제출 핸들러
@@ -76,32 +71,27 @@ function Login() {
     e.preventDefault();
 
     // 모든 필드 유효성 검사 (제출 시에는 빈 값도 검사)
-    const emailError = email.trim()
-      ? validateEmail(email)
-      : "이메일 주소가 올바르지 않아요.";
-    const passwordError = password.trim()
-      ? validatePassword(password)
-      : "비밀번호를 입력해주세요.";
+    const emailError = email.trim() ? validateEmail(email) : '이메일 주소가 올바르지 않아요.';
+    const passwordError = password.trim() ? '' : '비밀번호를 입력해주세요.';
 
     setErrors({
       email: emailError,
       password: passwordError,
     });
 
+    // [수정] formValid로 최종 차단
+    if (!(formValid && !emailError && !passwordError)) return;
+
     // 오류가 없으면 로그인 처리
-    if (!emailError && !passwordError) {
-      console.log("로그인 처리:", { email, password });
-      // 실제 로그인 API 호출 로직
-    }
+    console.log('로그인 처리:', {email, password});
+    // 실제 로그인 API 호출 로직
   };
 
   return (
     <div className="min-h-screen w-screen bg-white relative">
       {/* 로고 - 왼쪽 상단 고정 */}
       <div className="absolute top-8 left-8 z-10">
-        <h1 className="text-[28px] font-black font-['Pretendard_Variable'] leading-[38px]">
-          ArtConnect
-        </h1>
+        <h1 className="text-[28px] font-black font-['Pretendard_Variable'] leading-[38px]">ArtConnect</h1>
       </div>
 
       {/* 중앙 컨텐츠 컨테이너 */}
@@ -109,7 +99,7 @@ function Login() {
         {/* 메인 제목 */}
         <div className="mb-8">
           <h2 className="text-[28px] font-extrabold font-['Pretendard_Variable'] leading-[38px] text-center whitespace-pre-line">
-            {"로그인하고 아트커넥트에서\n오늘도 멋진 작업을 이어가세요"}
+            {'로그인하고 아트커넥트에서\n오늘도 멋진 작업을 이어가세요'}
           </h2>
         </div>
 
@@ -121,10 +111,7 @@ function Login() {
               <div className="space-y-6">
                 {/* 이메일 */}
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
-                  >
+                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                     이메일
                   </label>
                   <input
@@ -134,25 +121,16 @@ function Login() {
                     onChange={handleEmailChange}
                     placeholder="example@example.com"
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
-                      errors.email
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:border-gray-400"
+                      errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-gray-400'
                     }`}
                   />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1 ml-1">
-                      {errors.email}
-                    </p>
-                  )}
+                  {errors.email && <p className="text-red-500 text-sm mt-1 ml-1">{errors.email}</p>}
                 </div>
 
                 {/* 비밀번호 - 토글 버튼 추가 */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label
-                      htmlFor="password"
-                      className="text-sm font-semibold text-gray-700"
-                    >
+                    <label htmlFor="password" className="text-sm font-semibold text-gray-700">
                       비밀번호
                     </label>
                     <button
@@ -161,129 +139,79 @@ function Login() {
                       className="focus:outline-none"
                     >
                       <img
-                        src={
-                          passwordVisible
-                            ? passwordvisiblebutton
-                            : passwordhiddenbutton
-                        }
-                        alt={
-                          passwordVisible ? "비밀번호 보임" : "비밀번호 숨김"
-                        }
+                        src={passwordVisible ? passwordvisiblebutton : passwordhiddenbutton}
+                        alt={passwordVisible ? '비밀번호 보임' : '비밀번호 숨김'}
                         className="w-6 h-6"
                       />
                     </button>
                   </div>
                   <input
                     id="password"
-                    type={passwordVisible ? "text" : "password"}
+                    type={passwordVisible ? 'text' : 'password'}
                     value={password}
                     onChange={handlePasswordChange}
                     placeholder="비밀번호 입력"
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-0 outline-none transition-colors ${
-                      errors.password
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:border-gray-400"
+                      errors.password ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-gray-400'
                     }`}
                   />
-                  {errors.password && (
-                    <p className="text-red-500 text-sm mt-1 ml-1">
-                      {errors.password}
-                    </p>
-                  )}
+                  {errors.password && <p className="text-red-500 text-sm mt-1 ml-1">{errors.password}</p>}
                 </div>
 
                 {/* 로그인 버튼 */}
                 <button
                   type="submit"
-                  className="w-full transition-transform hover:scale-[1.02]"
+                  disabled={!formValid}
+                  className={`w-full group ${!formValid ? 'opacity-50 pointer-events-none' : ''}`} // [추가] 비활성화 시 호버 차단
                 >
-                  <img src={Signinbutton} alt="로그인" className="w-full" />
+                  <img
+                    src={Signinbutton}
+                    alt="로그인"
+                    className={`w-full ${formValid ? 'group-hover:hidden' : ''}`} // [수정] 호버 시 감춤(활성일 때만)
+                  />
+                  <img
+                    src={Signinbuttonhover}
+                    alt="로그인"
+                    className={`w-full hidden ${formValid ? 'group-hover:block' : ''}`} // [추가]
+                  />
                 </button>
 
                 {/* 이메일/비밀번호 찾기 */}
                 <div className="text-right">
-                  <button
-                    type="button"
-                    className="text-sm text-gray-500 hover:text-gray-700 underline"
-                  >
+                  <button type="button" className="text-sm text-gray-500 hover:text-gray-700 underline">
                     이메일/비밀번호 찾기
                   </button>
                 </div>
 
                 {/* 소셜 로그인 */}
                 <div className="text-center">
-                  <p className="text-sm font-semibold text-gray-600 mb-4">
-                    또는 다음으로 시작하기
-                  </p>
+                  <p className="text-sm font-semibold text-gray-600 mb-4">또는 다음으로 시작하기</p>
                   <div className="flex justify-center gap-[10px]">
                     {/* Google */}
-                    <button
-                      type="button"
-                      className="w-[52px] h-[52px] flex items-center justify-center group"
-                    >
-                      <img
-                        src={googleIcon}
-                        alt="Google"
-                        className="w-[40px] h-[40px] group-hover:hidden"
-                      />
-                      <img
-                        src={googleHoverIcon}
-                        alt="Google"
-                        className="w-[40px] h-[40px] hidden group-hover:block"
-                      />
+                    <button type="button" className="w-[52px] h-[52px] flex items-center justify-center group">
+                      <img src={googleIcon} alt="Google" className="w-[40px] h-[40px] group-hover:hidden" />
+                      <img src={googleHoverIcon} alt="Google" className="w-[40px] h-[40px] hidden group-hover:block" />
                     </button>
 
                     {/* KakaoTalk */}
-                    <button
-                      type="button"
-                      className="w-[52px] h-[52px] flex items-center justify-center group"
-                    >
-                      <img
-                        src={kakaoIcon}
-                        alt="Kakao"
-                        className="w-[40px] h-[40px] group-hover:hidden"
-                      />
-                      <img
-                        src={kakaoHoverIcon}
-                        alt="Kakao"
-                        className="w-[40px] h-[40px] hidden group-hover:block"
-                      />
+                    <button type="button" className="w-[52px] h-[52px] flex items-center justify-center group">
+                      <img src={kakaoIcon} alt="Kakao" className="w-[40px] h-[40px] group-hover:hidden" />
+                      <img src={kakaoHoverIcon} alt="Kakao" className="w-[40px] h-[40px] hidden group-hover:block" />
                     </button>
 
                     {/* Naver */}
-                    <button
-                      type="button"
-                      className="w-[52px] h-[52px] flex items-center justify-center group"
-                    >
-                      <img
-                        src={naverIcon}
-                        alt="Naver"
-                        className="w-[40px] h-[40px] group-hover:hidden"
-                      />
-                      <img
-                        src={naverHoverIcon}
-                        alt="Naver"
-                        className="w-[40px] h-[40px] hidden group-hover:block"
-                      />
+                    <button type="button" className="w-[52px] h-[52px] flex items-center justify-center group">
+                      <img src={naverIcon} alt="Naver" className="w-[40px] h-[40px] group-hover:hidden" />
+                      <img src={naverHoverIcon} alt="Naver" className="w-[40px] h-[40px] hidden group-hover:block" />
                     </button>
                   </div>
                 </div>
 
                 {/* 회원가입 링크 */}
                 <div className="text-center flex items-center justify-center gap-2">
-                  <p className="text-sm font-normal text-gray-600">
-                    아직 회원이 아니신가요?
-                  </p>
-                  <button
-                    type="button"
-                    className="group"
-                    onClick={() => navigate("/signup")}
-                  >
-                    <img
-                      src={Signupunderlineicon}
-                      alt="회원가입"
-                      className="h-[22px]"
-                    />
+                  <p className="text-sm font-normal text-gray-600">아직 회원이 아니신가요?</p>
+                  <button type="button" className="group" onClick={() => navigate('/signup')}>
+                    <img src={Signupunderlineicon} alt="회원가입" className="h-[22px]" />
                   </button>
                 </div>
               </div>
