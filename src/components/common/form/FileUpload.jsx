@@ -6,6 +6,7 @@ export default function FileUpload({
   accept = 'image/*',
   multiple = true,
   buttonText = '파일 선택',
+  showButton = true,
 }) {
   const handleFileUpload = (newFiles) => {
     const fileArray = Array.from(newFiles || []);
@@ -45,16 +46,18 @@ export default function FileUpload({
       )}
 
       {/* 파일 선택 버튼 */}
-      <label className="inline-block px-[24px] py-[6px] mt-[8px] mb-[24px] bg-[#F1F0EFB2] font-[700] rounded-[8px] hover:bg-[#F1F0EF] cursor-pointer">
-        {buttonText}
-        <input
-          type="file"
-          multiple={multiple}
-          accept={accept}
-          className="hidden"
-          onChange={(e) => handleFileUpload(e.target.files)}
-        />
-      </label>
+      {showButton && (
+        <label className="inline-block px-[24px] py-[6px] mt-[8px] mb-[24px] bg-[#F1F0EFB2] font-[700] rounded-[8px] hover:bg-[#F1F0EF] cursor-pointer">
+          {buttonText}
+          <input
+            type="file"
+            multiple={multiple}
+            accept={accept}
+            className="hidden"
+            onChange={(e) => handleFileUpload(e.target.files)}
+          />
+        </label>
+      )}
     </div>
   );
 }

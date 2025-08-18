@@ -36,7 +36,7 @@ export default function ProjectDetail() {
       </div>
 
       {/* 시안 업로드(아티스트뷰) */}
-      <Uploader />
+      <Uploader className="mb-[120px]" />
 
       <h3 className="mb-[25px] font-[600] text-[18px]">시안 및 피드백 내역</h3>
       {/* 채팅 없을때(비지니스뷰) */}
