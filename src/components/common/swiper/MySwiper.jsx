@@ -11,7 +11,7 @@ export default function MySwiper({images = []}) {
   if (!images.length) return null;
 
   return (
-    <div className={`my-swiper`}>
+    <div className="my-swiper aspect-[4/3] w-full">
       <Swiper
         modules={[Navigation, Pagination]}
         navigation={true}
