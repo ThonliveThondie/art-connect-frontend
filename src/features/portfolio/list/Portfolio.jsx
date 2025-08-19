@@ -3,11 +3,12 @@ import {useNavigate} from 'react-router-dom';
 import Card from './Card';
 import DefaultProfile from '../../../assets/images/default-profile-img.svg';
 import BackButton from '../../../components/common/buttons/BackButton';
+import {useStore} from '@/store/useStore';
 
-export default function Portfolio({userType}) {
+export default function Portfolio() {
+  const userType = useStore((s) => s.userType) || 'business';
+  const isArtist = userType === 'artist';
   const navigate = useNavigate();
-
-  const isBrowsingMode = userType === 'business';
 
   const handleAddPortfolio = () => {
     navigate('/portfolio/add');
@@ -19,7 +20,7 @@ export default function Portfolio({userType}) {
 
   // 프로필 샘플 데이터
   const profileData = {
-    name: isBrowsingMode ? 'suum' : 'suum',
+    name: 'suum',
     school: '금오공과대학교 컴퓨터공학전공',
     location: '로고 디자인',
     experience: '미니멀・빈티지',
@@ -66,7 +67,7 @@ export default function Portfolio({userType}) {
 
   return (
     <div className="min-w-[1000px] py-[26px] px-[140px]">
-      {isBrowsingMode && <BackButton />}
+      {!isArtist && <BackButton />}
 
       {/* 프로필 영역 */}
       <div className="flex items-start gap-[32px] mb-[89px]">
@@ -95,16 +96,16 @@ export default function Portfolio({userType}) {
       {/* 포트폴리오 헤더 */}
       <div className="flex items-center justify-between mb-[20px]">
         <h3 className="text-[16px] font-[600]">
-          {isBrowsingMode ? `포트폴리오` : `내 포트폴리오`}
+          {isArtist ? `포트폴리오` : `내 포트폴리오`}
           <span className="ml-[8px] font-[800] text-[18px] text-[#5F5E5B]"> {mockPortfolios.length}</span>
         </h3>
 
-        {!isBrowsingMode && (
+        {isArtist && (
           <button
             onClick={handleAddPortfolio}
             className="flex items-center gap-[4px] text-black/60 rounded-[4px] px-[8px] hover:text-black hover:bg-[#F1EEEC]"
           >
-            <Plus size="14px" />
+            <Plus size={14} />
             포트폴리오 추가
           </button>
         )}
@@ -120,7 +121,7 @@ export default function Portfolio({userType}) {
       </div>
 
       {/* 포트폴리오가 없을 때 */}
-      {!isBrowsingMode && mockPortfolios.length === 0 && (
+      {isArtist && mockPortfolios.length === 0 && (
         <div className="text-center py-12">
           <div
             onClick={handleAddPortfolio}

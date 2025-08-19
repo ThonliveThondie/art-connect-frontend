@@ -1,4 +1,5 @@
 import {NavLink} from 'react-router-dom';
+import {useStore} from '@/store/useStore';
 
 import StoreIcon from '../../assets/icons/icon-store.svg?react';
 import InProgressIcon from '../../assets/icons/icon-in-progress.svg?react';
@@ -35,7 +36,9 @@ const items = (userType) =>
         {to: '/profile/artist', name: '내 정보', Icon: UserIcon},
       ];
 
-export default function Sidebar({userType = 'business'}) {
+export default function Sidebar() {
+  const userType = useStore((s) => s.userType) || 'business';
+
   return (
     <aside className="w-[240px] bg-[#F8F7F6] border-r border-black/20 min-h-screen ">
       <Logo className="my-[12px] mx-[16px]" />

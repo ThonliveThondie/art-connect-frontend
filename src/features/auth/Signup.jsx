@@ -1,34 +1,47 @@
 import React, {useState, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import googleIcon from './membership/icon/default/구글.png';
-import googleHoverIcon from './membership/icon/hover/구글.png';
-import naverIcon from './membership/icon/default/네이버.png';
-import naverHoverIcon from './membership/icon/hover/네이버.png';
-import kakaoIcon from './membership/icon/default/카카오.png';
-import kakaoHoverIcon from './membership/icon/hover/카카오.png';
-import DesignerIcon from './membership/회원유형선택버튼/designer.png';
-import SosangIcon from './membership/회원유형선택버튼/sosang.png';
-import Signcomplete from './membership/가입완료버튼/complete.png';
-import Signcompletehover from './membership/가입완료버튼/complete_hover.png';
-import Loginunderlineicon from './membership/로그인버튼/Loginbutton.png';
-import Loginunderlinehovericon from './membership/로그인버튼/Loginbuttonhover.png';
-import passwordhiddenbutton from './membership/비밀번호보기버튼/hidden.png';
-import passwordvisiblebutton from './membership/비밀번호보기버튼/visible.png';
+import {useStore} from '@/store/useStore'; // 기존 스토어 사용
+import {signupApi} from '@/api/auth/signup';
+
+import googleIcon from '@/assets/membership/icon/default/구글.png';
+import googleHoverIcon from '@/assets/membership/icon/hover/구글.png';
+import naverIcon from '@/assets/membership/icon/default/네이버.png';
+import naverHoverIcon from '@/assets/membership/icon/hover/네이버.png';
+import kakaoIcon from '@/assets/membership/icon/default/카카오.png';
+import kakaoHoverIcon from '@/assets/membership/icon/hover/카카오.png';
+
+import DesignerIcon from '@/assets/membership/회원유형선택버튼/designer.png';
+import SosangIcon from '@/assets/membership/회원유형선택버튼/sosang.png';
+
+import Signcomplete from '@/assets/membership/가입완료버튼/complete.png';
+import Signcompletehover from '@/assets/membership/가입완료버튼/complete_hover.png';
+
+import Loginunderlineicon from '@/assets/membership/로그인버튼/Loginbutton.png';
+import Loginunderlinehovericon from '@/assets/membership/로그인버튼/Loginbuttonhover.png';
+
+import passwordhiddenbutton from '@/assets/membership/비밀번호보기버튼/hidden.png';
+import passwordvisiblebutton from '@/assets/membership/비밀번호보기버튼/visible.png';
 
 function Signup() {
   const navigate = useNavigate();
-  const [userType, setUserType] = useState('designer');
+
+  const [userType, setUserType] = useState('artist');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  // 오류 상태 관리
+  const setUserTypeGlobal = useStore((s) => s.setUserType);
+
   const [errors, setErrors] = useState({
     email: '',
     password: '',
     confirmPassword: '',
   });
+
+  const toBackendUserType = (frontendType) => {
+    return frontendType === 'artist' ? 'DESIGNER' : 'BUSINESS_OWNER';
+  };
 
   // 정규식 패턴
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,7 +88,6 @@ function Signup() {
     const value = e.target.value;
     setEmail(value);
 
-    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validateEmail(value);
     setErrors((prev) => ({...prev, email: error}));
   };
@@ -85,11 +97,9 @@ function Signup() {
     const value = e.target.value;
     setPassword(value);
 
-    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validatePassword(value);
     setErrors((prev) => ({...prev, password: error}));
 
-    // 비밀번호 확인도 함께 검사 (비밀번호 확인이 입력되어 있을 때만)
     if (confirmPassword) {
       const confirmError = validateConfirmPassword(confirmPassword, value);
       setErrors((prev) => ({...prev, confirmPassword: confirmError}));
@@ -101,16 +111,14 @@ function Signup() {
     const value = e.target.value;
     setConfirmPassword(value);
 
-    // 실시간 유효성 검사 (빈 값일 때는 오류 메시지 제거)
     const error = validateConfirmPassword(value, password);
     setErrors((prev) => ({...prev, confirmPassword: error}));
   };
 
   // 폼 제출 핸들러
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // [수정] 제출 시 에러 메시지(비밀번호 조건 문구 삭제)
     const emailError = email.trim() ? validateEmail(email) : '이메일 주소가 올바르지 않아요.';
     const passwordError = password.trim() ? '' : '비밀번호를 입력하세요.'; // [수정] 옛 문구([비밀번호 조건]) 제거
     const confirmPasswordError = confirmPassword.trim()
@@ -122,18 +130,31 @@ function Signup() {
       password: passwordError,
       confirmPassword: confirmPasswordError,
     });
+
     if (!(formValid && !emailError && !passwordError && !confirmPasswordError)) {
       return;
     }
 
-    // 오류가 없으면 회원가입 처리
-    console.log('회원가입 처리:', {userType, email, password});
-    // 실제 회원가입 API 호출 로직
+    try {
+      const backendUserType = toBackendUserType(userType);
+
+      await signupApi({
+        email,
+        password,
+        userType: backendUserType,
+      });
+
+      setUserTypeGlobal(userType);
+
+      navigate('/login', {replace: true});
+    } catch (err) {
+      console.error(err?.message || '회원가입 실패');
+    }
   };
 
   return (
     <div className="min-h-screen w-screen bg-white relative">
-      {/* 로고 - 왼쪽 상단 고정 */}
+      {/* 로고 */}
       <div className="absolute top-8 left-8 z-10">
         <h1 className="text-[28px] font-black font-['Pretendard_Variable'] leading-[38px]">ArtConnect</h1>
       </div>
@@ -157,35 +178,33 @@ function Signup() {
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-3">회원 유형 선택</label>
                   <div className="flex gap-6">
-                    {/* 회원 유형 선택 버튼 */}
+                    {/* 디자이너 선택 버튼 */}
                     <button
                       type="button"
-                      onClick={() => setUserType('designer')}
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
-                        userType === 'designer' ? 'border-gray-800' : 'border-gray-200'
-                      }`}
+                      onClick={() => setUserType('artist')}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 
+                        transition-all duration-200 border-2 rounded-xl
+                        ${userType === 'artist' ? 'border-gray-800' : 'border-gray-200'}`}
                     >
                       <img src={DesignerIcon} alt="디자이너" className="w-6 h-6" />
-                      <span className={`text-gray-900 ${userType === 'designer' ? 'font-medium' : 'font-normal'}`}>
-                        디자이너
-                      </span>
+                      <span className="text-gray-900">디자이너</span>
                     </button>
+
+                    {/* 소상공인 선택 버튼 */}
                     <button
                       type="button"
                       onClick={() => setUserType('business')}
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 border-2 rounded-xl ${
-                        userType === 'business' ? 'border-gray-800' : 'border-gray-200'
-                      }`}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 
+                        transition-all duration-200 border-2 rounded-xl
+                        ${userType === 'business' ? 'border-gray-800' : 'border-gray-200'}`}
                     >
                       <img src={SosangIcon} alt="소상공인" className="w-6 h-6" />
-                      <span className={`text-gray-900 ${userType === 'business' ? 'font-medium' : 'font-normal'}`}>
-                        소상공인
-                      </span>
+                      <span className="text-gray-900">소상공인</span>
                     </button>
                   </div>
                 </div>
 
-                {/* 이메일 - 개별 마진 적용 */}
+                {/* 이메일 */}
                 <div className="mb-10">
                   <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                     이메일
@@ -254,7 +273,6 @@ function Signup() {
                     )}
                   </div>
                 </div>
-
                 {/* 가입하기 버튼 */}
                 <button
                   type="submit"

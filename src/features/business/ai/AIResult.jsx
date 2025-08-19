@@ -1,8 +1,8 @@
 import {useEffect, useRef} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import EmojiPalette from '../../assets/images/emoji-palette.svg?react';
-import EmojiEyes from '../../assets/images/emoji-eyes.svg?react';
-import EmojiBag from '../../assets/images/emoji-bag.svg';
+import EmojiPalette from '../../../assets/images/emoji-palette.svg?react';
+import EmojiEyes from '../../../assets/images/emoji-eyes.svg?react';
+import EmojiBag from '../../../assets/images/emoji-bag.svg';
 import DesignerCard from './DesignerCard';
 
 export default function AIResult() {
