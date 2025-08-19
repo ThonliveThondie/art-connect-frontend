@@ -1,12 +1,12 @@
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import WorkRequestModal from '../../components/modal/WorkRequest';
-import AcceptButton from '../../components/common/buttons/AcceptButton';
-import RefreshButton from '../../components/common/buttons/RefreshButton';
+import WorkRequestModal from '../../../components/modal/WorkRequest';
+import AcceptButton from '../../../components/common/buttons/AcceptButton';
+import RefreshButton from '../../../components/common/buttons/RefreshButton';
 
-import SampleImg1 from '../../assets/samples/image1.jpg';
-import SampleImg2 from '../../assets/samples/image2.jpg';
-import DefaultProfile from '../../assets/icons/default-profile.svg';
+import SampleImg1 from '../../../assets/samples/image1.jpg';
+import SampleImg2 from '../../../assets/samples/image2.jpg';
+import DefaultProfile from '../../../assets/icons/default-profile.svg';
 
 export default function DesignerCard({designerId = 'designer123'}) {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,5 +1,5 @@
-import SendBtnActive from '../../assets/images/send-btn-active.svg';
-import SendBtnDefault from '../../assets/images/send-btn-default.svg';
+import SendBtnActive from '../../../assets/images/send-btn-active.svg';
+import SendBtnDefault from '../../../assets/images/send-btn-default.svg';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 

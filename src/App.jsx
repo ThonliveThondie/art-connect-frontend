@@ -1,16 +1,16 @@
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import Layout from './components/layout/Layout';
 
-import AIInput from './features/businessDashboard/AIInput.jsx';
-import AIResult from './features/businessDashboard/AIResult.jsx';
+import AIInput from './features/business/ai/AIInput.jsx';
+import AIResult from './features/business/ai/AIResult.jsx';
 import PortfolioDetail from './features/portfolio/detail/PortfolioDetail';
-import NewProject from './features/artistDashboard/NewProject.jsx';
-import NoProject from './features/artistDashboard/NoProject.jsx';
-import StoreManagement from './features/store/StoreManagement.jsx';
+import NewProject from './features/artist/NewProject.jsx';
+import NoProject from './features/artist/NoProject.jsx';
+import StoreManagement from './features/business/store/StoreManagement.jsx';
 import PaymentHistory from './features/payment/PaymentHistory.jsx';
-import ProfileBusiness from './features/profile/ProfileBusiness.jsx';
+import ProfileBusiness from './features/user/ProfileBusiness.jsx';
 import RevenueHistory from './features/revenue/RevenueHistory.jsx';
-import ProfileArtist from './features/profile/ProfileArtist.jsx';
+import ProfileArtist from './features/user/ProfileArtist.jsx';
 import Portfolio from './features/portfolio/list/Portfolio.jsx';
 import OngoingProjects from './features/project/list/ongoing/OngoingProjects';
 import CompletedProjects from './features/project/list/completed/CompletedProjects.jsx';
@@ -20,7 +20,7 @@ import Login from './Login.jsx';
 import Signup from './Signup.jsx';
 
 const App = () => {
-  const userType = 'artist'; // artist로 변경하면 아티스트 홈으로 리다이렉트
+  const userType = 'business'; // artist로 변경하면 아티스트 홈으로 리다이렉트
 
   return (
     <BrowserRouter>
