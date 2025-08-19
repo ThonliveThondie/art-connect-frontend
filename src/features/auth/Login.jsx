@@ -1,19 +1,18 @@
 import React, {useState, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import googleIcon from './membership/icon/default/구글.png';
-import googleHoverIcon from './membership/icon/hover/구글.png';
-import naverIcon from './membership/icon/default/네이버.png';
-import naverHoverIcon from './membership/icon/hover/네이버.png';
-import kakaoIcon from './membership/icon/default/카카오.png';
-import kakaoHoverIcon from './membership/icon/hover/카카오.png';
-import Signinbutton from './membership/로그인페이지로그인버튼/login.png';
-import Signinbuttonhover from './membership/로그인페이지로그인버튼/login_hover.png';
-import emailbutton from './membership/이메일/회원가입버튼/email.png';
-import emailbuttonhover from './membership/이메일/회원가입버튼/emailhover.png';
-import Signupunderlineicon from './membership/회원가입/signinunderline.png';
-import passwordhiddenbutton from './membership/비밀번호보기버튼/hidden.png';
-import passwordvisiblebutton from './membership/비밀번호보기버튼/visible.png';
-
+import googleIcon from '@/assets/membership/icon/default/구글.png';
+import googleHoverIcon from '@/assets/membership/icon/hover/구글.png';
+import naverIcon from '@/assets/membership/icon/default/네이버.png';
+import naverHoverIcon from '@/assets/membership/icon/hover/네이버.png';
+import kakaoIcon from '@/assets/membership/icon/default/카카오.png';
+import kakaoHoverIcon from '@/assets/membership/icon/hover/카카오.png';
+import Signinbutton from '@/assets/membership/로그인페이지로그인버튼/login.png';
+import Signinbuttonhover from '@/assets/membership/로그인페이지로그인버튼/login_hover.png';
+import emailbutton from '@/assets/membership/이메일/회원가입버튼/email.png';
+import emailbuttonhover from '@/assets/membership/이메일/회원가입버튼/emailhover.png';
+import Signupunderlineicon from '@/assets/membership/회원가입/signinunderline.png';
+import passwordhiddenbutton from '@/assets/membership/비밀번호보기버튼/hidden.png';
+import passwordvisiblebutton from '@/assets/membership/비밀번호보기버튼/visible.png';
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');

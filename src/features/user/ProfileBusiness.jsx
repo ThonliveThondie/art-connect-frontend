@@ -1,14 +1,13 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import profileicon from '../../membership/profile_business/icon/ProfileIcon.png';
-import changeicon from '../../membership/profile_business/default/Change.png';
-import changeiconhover from '../../membership/profile_business/hover/ChangeHover.png';
-import outicon from '../../membership/profile_business/default/Out.png';
-import outiconhover from '../../membership/profile_business/hover/OutHover.png';
-import marketinput from '../../membership/profile_business/default/MarketInput.png';
-import marketinputhover from '../../membership/profile_business/hover/MarketInputHover.png';
-import marketinputfilled from '../../membership/profile_business/hover/MarketInputFilled.png';
-
+import profileicon from '@/assets/membership/profile_business/icon/ProfileIcon.png';
+import changeicon from '@/assets/membership/profile_business/default/Change.png';
+import changeiconhover from '@/assets/membership/profile_business/hover/ChangeHover.png';
+import outicon from '@/assets/membership/profile_business/default/Out.png';
+import outiconhover from '@/assets/membership/profile_business/hover/OutHover.png';
+import marketinput from '@/assets/membership/profile_business/default/MarketInput.png';
+import marketinputhover from '@/assets/membership/profile_business/hover/MarketInputHover.png';
+import marketinputfilled from '@/assets/membership/profile_business/hover/MarketInputFilled.png';
 const UserProfile = () => {
   const navigate = useNavigate();
   const [editingFields, setEditingFields] = useState({

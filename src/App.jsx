@@ -17,8 +17,8 @@ import OngoingProjects from './features/project/list/ongoing/OngoingProjects';
 import CompletedProjects from './features/project/list/completed/CompletedProjects.jsx';
 import PortfolioAdd from './features/portfolio/add/PortfolioAdd.jsx';
 import ProjectDetail from './features/project/detail/ProjectDetail';
-import Login from './Login.jsx';
-import Signup from './Signup.jsx';
+import Login from './features/auth/Login.jsx';
+import Signup from './features/auth/Signup.jsx';
 
 function HomeRedirect() {
   const userType = useStore((s) => s.userType);

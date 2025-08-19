@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import profileicon from '../../membership/profile_business/icon/ProfileIcon.png';
-import changeicon from '../../membership/profile_business/default/Change.png';
-import changeiconhover from '../../membership/profile_business/hover/ChangeHover.png';
-import outicon from '../../membership/profile_business/default/Out.png';
-import outiconhover from '../../membership/profile_business/hover/OutHover.png';
-
+import profileicon from '@/assets/membership/profile_business/icon/ProfileIcon.png';
+import changeicon from '@/assets/membership/profile_business/default/Change.png';
+import changeiconhover from '@/assets/membership/profile_business/hover/ChangeHover.png';
+import outicon from '@/assets/membership/profile_business/default/Out.png';
+import outiconhover from '@/assets/membership/profile_business/hover/OutHover.png';
 const UserProfile = () => {
   const navigate = useNavigate();
   const [editingFields, setEditingFields] = useState({

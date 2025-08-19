@@ -1,20 +1,23 @@
 import React, {useState, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import googleIcon from './membership/icon/default/구글.png';
-import googleHoverIcon from './membership/icon/hover/구글.png';
-import naverIcon from './membership/icon/default/네이버.png';
-import naverHoverIcon from './membership/icon/hover/네이버.png';
-import kakaoIcon from './membership/icon/default/카카오.png';
-import kakaoHoverIcon from './membership/icon/hover/카카오.png';
-import DesignerIcon from './membership/회원유형선택버튼/designer.png';
-import SosangIcon from './membership/회원유형선택버튼/sosang.png';
-import Signcomplete from './membership/가입완료버튼/complete.png';
-import Signcompletehover from './membership/가입완료버튼/complete_hover.png';
-import Loginunderlineicon from './membership/로그인버튼/Loginbutton.png';
-import Loginunderlinehovericon from './membership/로그인버튼/Loginbuttonhover.png';
-import passwordhiddenbutton from './membership/비밀번호보기버튼/hidden.png';
-import passwordvisiblebutton from './membership/비밀번호보기버튼/visible.png';
+import googleIcon from '@/assets/membership/icon/default/구글.png';
+import googleHoverIcon from '@/assets/membership/icon/hover/구글.png';
+import naverIcon from '@/assets/membership/icon/default/네이버.png';
+import naverHoverIcon from '@/assets/membership/icon/hover/네이버.png';
+import kakaoIcon from '@/assets/membership/icon/default/카카오.png';
+import kakaoHoverIcon from '@/assets/membership/icon/hover/카카오.png';
 
+import DesignerIcon from '@/assets/membership/회원유형선택버튼/designer.png';
+import SosangIcon from '@/assets/membership/회원유형선택버튼/sosang.png';
+
+import Signcomplete from '@/assets/membership/가입완료버튼/complete.png';
+import Signcompletehover from '@/assets/membership/가입완료버튼/complete_hover.png';
+
+import Loginunderlineicon from '@/assets/membership/로그인버튼/Loginbutton.png';
+import Loginunderlinehovericon from '@/assets/membership/로그인버튼/Loginbuttonhover.png';
+
+import passwordhiddenbutton from '@/assets/membership/비밀번호보기버튼/hidden.png';
+import passwordvisiblebutton from '@/assets/membership/비밀번호보기버튼/visible.png';
 function Signup() {
   const navigate = useNavigate();
   const [userType, setUserType] = useState('designer');
