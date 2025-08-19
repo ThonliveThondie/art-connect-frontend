@@ -1,5 +1,6 @@
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import Layout from './components/layout/Layout';
+import {useStore} from './store/useStore';
 
 import AIInput from './features/business/ai/AIInput.jsx';
 import AIResult from './features/business/ai/AIResult.jsx';
@@ -19,18 +20,18 @@ import ProjectDetail from './features/project/detail/ProjectDetail';
 import Login from './Login.jsx';
 import Signup from './Signup.jsx';
 
-const App = () => {
-  const userType = 'business'; // artist로 변경하면 아티스트 홈으로 리다이렉트
+function HomeRedirect() {
+  const userType = useStore((s) => s.userType);
+  if (!userType) return <Navigate to="/login" replace />;
+  return userType === 'business' ? <Navigate to="/dashboard/ai" replace /> : <Navigate to="/new-project" replace />;
+}
 
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout userType={userType} />}>
-          {userType === 'business' ? (
-            <Route index element={<Navigate to="/dashboard/ai" replace />} />
-          ) : (
-            <Route index element={<Navigate to="/new-project" replace />} />
-          )}
+        <Route element={<Layout />}>
+          <Route index element={<HomeRedirect />} />
 
           <Route index element={<Navigate to="/dashboard/ai" replace />} />
 
@@ -48,7 +49,7 @@ const App = () => {
 
           <Route path="/portfolio/add" element={<PortfolioAdd />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
-          <Route path="/portfolio" element={<Portfolio userType={userType} />} />
+          <Route path="/portfolio" element={<Portfolio />} />
 
           <Route path="/projects/completed" element={<CompletedProjects />} />
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
