@@ -4,7 +4,14 @@ import StatusBadge from '@/components/common/badge/StatusBadge';
 import WorkRequestViewModal from '@/components/modal/WorkRequestView';
 import ConfirmModal from '@/components/modal/ConfirmModal';
 
-export default function Header({status = 'pending', title, company, designer, contractDate}) {
+export default function Header({
+  status = 'pending',
+  title,
+  company,
+  designer,
+  contractDate,
+  showCompleteButton = false,
+}) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isWorkRequestOpen, setIsWorkRequestOpen] = useState(false);
 
@@ -34,12 +41,14 @@ export default function Header({status = 'pending', title, company, designer, co
 
       {/* 오른쪽 */}
       <div className="flex items-center gap-[10px]">
-        <button
-          onClick={() => setIsConfirmOpen(true)}
-          className="bg-[#4A90E2] hover:bg-[#3C7DC9] text-white px-[30px] py-2 rounded-[8px] text-[15px] font-bold"
-        >
-          프로젝트 완료
-        </button>
+        {showCompleteButton && (
+          <button
+            onClick={() => setIsConfirmOpen(true)}
+            className="bg-[#4A90E2] hover:bg-[#3C7DC9] text-white px-[30px] py-2 rounded-[8px] text-[15px] font-bold"
+          >
+            프로젝트 완료
+          </button>
+        )}
 
         <button
           onClick={() => setIsWorkRequestOpen(true)}

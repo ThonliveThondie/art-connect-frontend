@@ -5,6 +5,7 @@ import BackButton from '@/components/common/buttons/BackButton';
 import Header from './Header';
 import Uploader from './Uploader';
 import ConversationList from './conversation/ConversationList';
+import {useStore} from '@/store/useStore';
 
 const dummyHeader = {
   status: 'reviewing',
@@ -18,8 +19,9 @@ export default function ProjectDetail() {
   const {projectId} = useParams();
   const navigate = useNavigate();
 
-  const userType = 'artist'; // 'artist' | 'business'
-  const isBrowsingMode = userType === 'business';
+  const userType = useStore((s) => s.userType) || 'business';
+  const isArtist = userType === 'artist';
+  const isBusiness = userType === 'business';
 
   return (
     <div className="min-w-[1000px] py-[26px] px-[140px]">
@@ -32,23 +34,26 @@ export default function ProjectDetail() {
           company={dummyHeader.company}
           designer={dummyHeader.designer}
           contractDate={dummyHeader.contractDate}
+          showCompleteButton={isBusiness}
         />
       </div>
 
       {/* 시안 업로드(아티스트뷰) */}
-      <Uploader className="mb-[120px]" />
+      {isArtist && <Uploader className="mb-[120px]" />}
 
       <h3 className="mb-[25px] font-[600] text-[18px]">시안 및 피드백 내역</h3>
       {/* 채팅 없을때(비지니스뷰) */}
-      {/* <div className="flex py-[60px] items-centerjustify-center">
-        <div className="text-black/20 flex flex-col items-center">
-          <Clock size={60} className="mb-2" />
-          <p className="text-center text-[24px] leading-[44px]">
-            디자이너가 시안을 준비하고 있습니다. <br />
-            조금만 기다려주세요.
-          </p>
+      {/* {isBusiness && (
+        <div className="flex py-[60px] items-centerjustify-center">
+          <div className="text-black/20 flex flex-col items-center">
+            <Clock size={60} className="mb-2" />
+            <p className="text-center text-[24px] leading-[44px]">
+              디자이너가 시안을 준비하고 있습니다. <br />
+              조금만 기다려주세요.
+            </p>
+          </div>
         </div>
-      </div> */}
+      )} */}
 
       {/* 대화 */}
       <ConversationList />
