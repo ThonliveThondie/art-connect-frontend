@@ -1,5 +1,6 @@
 import React, {useState, useMemo} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
+import {useStore} from '@/store/useStore';
 import googleIcon from '@/assets/membership/icon/default/구글.png';
 import googleHoverIcon from '@/assets/membership/icon/hover/구글.png';
 import naverIcon from '@/assets/membership/icon/default/네이버.png';
@@ -13,9 +14,14 @@ import emailbuttonhover from '@/assets/membership/이메일/회원가입버튼/e
 import Signupunderlineicon from '@/assets/membership/회원가입/signinunderline.png';
 import passwordhiddenbutton from '@/assets/membership/비밀번호보기버튼/hidden.png';
 import passwordvisiblebutton from '@/assets/membership/비밀번호보기버튼/visible.png';
+import {loginApi} from '@/api/auth/login';
+
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const prefilledEmail = location.state?.email || ''; // 회원가입에서 넘긴 이메일
+
+  const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -24,6 +30,10 @@ function Login() {
     email: '',
     password: '',
   });
+
+  const toFrontendUserType = (backendType) => {
+    return backendType === 'DESIGNER' ? 'artist' : 'business';
+  };
 
   // 정규식 패턴 (로그인용 - 더 간단한 검증)
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -81,9 +91,20 @@ function Login() {
     // [수정] formValid로 최종 차단
     if (!(formValid && !emailError && !passwordError)) return;
 
-    // 오류가 없으면 로그인 처리
-    console.log('로그인 처리:', {email, password});
-    // 실제 로그인 API 호출 로직
+    loginApi({email, password})
+      .then((res) => {
+        const mappedType = toFrontendUserType(res?.userType);
+
+        useStore.setState({
+          userId: res?.userId ?? null,
+          userType: mappedType,
+        });
+
+        navigate('/', {replace: true});
+      })
+      .catch((err) => {
+        alert(err?.message || '회원가입 실패');
+      });
   };
 
   return (

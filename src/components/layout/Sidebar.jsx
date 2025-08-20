@@ -37,7 +37,7 @@ const items = (userType) =>
       ];
 
 export default function Sidebar() {
-  const userType = useStore((s) => s.userType) || 'business';
+  const userType = useStore((s) => s.userType);
 
   return (
     <aside className="w-[240px] bg-[#F8F7F6] border-r border-black/20 min-h-screen ">

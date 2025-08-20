@@ -6,7 +6,7 @@ import BackButton from '../../../components/common/buttons/BackButton';
 import {useStore} from '@/store/useStore';
 
 export default function Portfolio() {
-  const userType = useStore((s) => s.userType) || 'business';
+  const userType = useStore((s) => s.userType);
   const isArtist = userType === 'artist';
   const navigate = useNavigate();
 

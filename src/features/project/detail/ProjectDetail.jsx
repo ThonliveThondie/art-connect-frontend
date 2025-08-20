@@ -19,7 +19,7 @@ export default function ProjectDetail() {
   const {projectId} = useParams();
   const navigate = useNavigate();
 
-  const userType = useStore((s) => s.userType) || 'business';
+  const userType = useStore((s) => s.userType);
   const isArtist = userType === 'artist';
   const isBusiness = userType === 'business';
 
