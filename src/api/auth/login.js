@@ -16,10 +16,13 @@ export const loginApi = async ({email, password}) => {
     );
     return res.data ?? null;
   } catch (err) {
-    if (err.respons) {
-      const msg = err.respons.data?.message || `로그인 실패 (${err.response.status})`;
+    if (err.response) {
+      const msg = err.response.data?.message || `로그인 실패 (${err.response.status})`;
       throw new Error(msg);
+    } else if (err.request) {
+      throw new Error('서버에 연결할 수 없습니다');
+    } else {
+      throw new Error('요청 처리 중 오류가 발생했습니다');
     }
-    throw new Error(err.request || `서버에 연결할 수 없습니다`);
   }
 };
