@@ -103,7 +103,7 @@ function Login() {
         navigate('/', {replace: true});
       })
       .catch((err) => {
-        console.error(err?.message || '로그인 실패');
+        alert(err?.message || '회원가입 실패');
       });
   };
 

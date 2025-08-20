@@ -136,19 +136,17 @@ function Signup() {
     }
 
     try {
-      const backendUserType = toBackendUserType(userType);
-
       await signupApi({
         email,
         password,
-        userType: backendUserType,
+        userType: toBackendUserType(userType), // 바로 매핑
       });
 
-      setUserTypeGlobal(userType);
+      setUserTypeGlobal(userType); // 프론트에서 쓸 타입만 저장
 
-      navigate('/login', {replace: true});
+      navigate('/login', {replace: true, state: {email}});
     } catch (err) {
-      console.error(err?.message || '회원가입 실패');
+      alert(err?.message || '회원가입 실패');
     }
   };
 
