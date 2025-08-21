@@ -64,13 +64,14 @@ export default function AIResult() {
         {/* AI 제안 요약 */}
         <div className="">
           <h3 className="mb-[18px] font-[600] text-[18px]">AI 제안 요약</h3>
-          <div className="flex gap-[18px]  ">
+          <div className="flex flex-col gap-[12px]">
             {summaryData.map((block, idx) => (
-              <div key={idx} className="w-[308px] bg-[#FBFAF9] px-[19px] py-[12px] rounded-[12px] ">
-                <div className="flex items-center gap-[4px] mb-[16px]">
+              <div key={idx} className="w-full bg-[#FBFAF9] px-[19px] py-[12px] rounded-[12px]">
+                <div className="flex items-center gap-[6px] mb-[12px]">
                   {block.icon}
                   <span className="text-[16px] font-semibold">{block.title}</span>
                 </div>
+
                 <ul className="list-disc list-inside space-y-[10px] tiny-marker">
                   {block.items.map((item, i) => (
                     <li key={i}>{item}</li>
@@ -84,7 +85,7 @@ export default function AIResult() {
         {/* 매칭 디자이너 */}
         <div>
           <h3 className="mb-[18px] font-[600] text-[18px]">매칭 디자이너</h3>
-          <div className="flex gap-10">
+          <div className="flex flex-wrap gap-10 justify-start md:justify-between">
             <DesignerCard />
             <DesignerCard />
           </div>
