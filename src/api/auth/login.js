@@ -9,17 +9,24 @@ export const loginApi = async ({email, password}) => {
       {email, password},
       {
         baseURL: BASE_URL,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
       }
     );
-    return res.data ?? null;
+
+    const rawAuth = res.headers?.authorization || '';
+    const token = rawAuth.replace(/^Bearer\s+/i, '');
+
+    const body = res.data ?? {};
+
+    return {...body, token};
   } catch (err) {
-    if (err.respons) {
-      const msg = err.respons.data?.message || `로그인 실패 (${err.response.status})`;
+    if (err.response) {
+      const msg = err.response.data?.message || `로그인 실패 (${err.response.status})`;
       throw new Error(msg);
+    } else if (err.request) {
+      throw new Error('서버에 연결할 수 없습니다');
+    } else {
+      throw new Error('요청 처리 중 오류가 발생했습니다');
     }
-    throw new Error(err.request || `서버에 연결할 수 없습니다`);
   }
 };

@@ -25,6 +25,9 @@ function Login() {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const setUserType = useStore((s) => s.setUserType);
+  const setToken = useStore((s) => s.setToken);
+
   // 오류 상태 관리
   const [errors, setErrors] = useState({
     email: '',
@@ -76,7 +79,7 @@ function Login() {
   };
 
   // 폼 제출 핸들러
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 모든 필드 유효성 검사 (제출 시에는 빈 값도 검사)
@@ -91,20 +94,26 @@ function Login() {
     // [수정] formValid로 최종 차단
     if (!(formValid && !emailError && !passwordError)) return;
 
-    loginApi({email, password})
-      .then((res) => {
-        const mappedType = toFrontendUserType(res?.userType);
+    try {
+      // 로그인 요청 → 응답 헤더의 authorization에서 token 추출됨
+      const res = await loginApi({email, password});
+      // res: { userId, userType, message, token }
 
-        useStore.setState({
-          userId: res?.userId ?? null,
-          userType: mappedType,
-        });
+      // [추가] 토큰 전역 저장 (필요 시 localStorage 연동은 추후)
+      if (res.token) setToken(res.token);
 
-        navigate('/', {replace: true});
-      })
-      .catch((err) => {
-        alert(err?.message || '회원가입 실패');
-      });
+      console.log('🔑 받은 토큰:', res.token);
+
+      // [수정] 백엔드 타입을 프론트 타입으로 매핑
+      const mappedType = toFrontendUserType(res?.userType);
+      setUserType(mappedType);
+
+      // [수정] 성공 후 이동
+      navigate('/', {replace: true});
+    } catch (err) {
+      // [수정] 메시지 문구: 로그인 실패로 통일
+      alert(err?.message || '로그인 실패');
+    }
   };
 
   return (

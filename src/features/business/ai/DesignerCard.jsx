@@ -14,25 +14,33 @@ export default function DesignerCard({designerId = 'designer123'}) {
 
   const handlePortfolioView = () => {
     navigate('/portfolio', {
-      state: {
-        viewMode: 'browse',
-        designerId: designerId,
-      },
+      state: {viewMode: 'browse', designerId},
     });
   };
   return (
     <>
-      <div className="relative flex flex-col gap-[16px] w-[471px] h-[254px] rounded-[12px] border border-black/10 px-[19px] py-[12px]">
+      <div
+        className="
+          relative flex flex-col gap-[16px]
+          flex-none shrink-0
+          rounded-[12px] border border-black/10 px-[19px] py-[12px]
+          overflow-hidden bg-white
+        "
+      >
         <div className="absolute top-[12px] right-[19px] flex items-center gap-[10px]">
           <AcceptButton hoverText="작업 의뢰서 보내기" onClick={() => setIsModalOpen(true)} />
           <RefreshButton />
         </div>
 
         <div className="flex items-center gap-[13px]">
-          <img src={DefaultProfile} alt="디자이너 프로필" className="w-[64px] h-[64px] rounded-full object-cover" />
-          <div className="flex flex-col gap-[6px]">
-            <p className="font-[600]">하진</p>
-            <p className="text-[#5F5E5B]">그래픽디자인 · 브랜딩</p>
+          <img
+            src={DefaultProfile}
+            alt="디자이너 프로필"
+            className="w-[64px] h-[64px] rounded-full object-cover bg-[#F6F5F4] flex-none shrink-0"
+          />
+          <div className="flex flex-col gap-[6px] truncate">
+            <p className="font-[600] leading-tight truncate">하진</p>
+            <p className="text-[#5F5E5B] leading-tight truncate">그래픽디자인 · 브랜딩</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -48,14 +56,14 @@ export default function DesignerCard({designerId = 'designer123'}) {
             alt="포트폴리오 샘플 1"
             width={210}
             height={110}
-            className="block w-[210px] h-[110px] rounded-[8px] object-cover bg-[#F6F5F4]"
+            className="block w-[210px] h-[110px] rounded-[8px] object-cover bg-[#F6F5F4] flex-none shrink-0"
           />
           <img
             src={SampleImg2}
             alt="포트폴리오 샘플 2"
             width={210}
             height={110}
-            className="block w-[210px] h-[110px] rounded-[8px] object-cover bg-[#F6F5F4]"
+            className="block w-[210px] h-[110px] rounded-[8px] object-cover bg-[#F6F5F4] flex-none shrink-0"
           />
         </div>
       </div>

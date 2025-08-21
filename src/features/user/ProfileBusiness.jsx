@@ -1,252 +1,105 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import profileicon from '@/assets/membership/profile_business/icon/ProfileIcon.png';
-import changeicon from '@/assets/membership/profile_business/default/Change.png';
-import changeiconhover from '@/assets/membership/profile_business/hover/ChangeHover.png';
-import outicon from '@/assets/membership/profile_business/default/Out.png';
-import outiconhover from '@/assets/membership/profile_business/hover/OutHover.png';
-import marketinput from '@/assets/membership/profile_business/default/MarketInput.png';
-import marketinputhover from '@/assets/membership/profile_business/hover/MarketInputHover.png';
-import marketinputfilled from '@/assets/membership/profile_business/hover/MarketInputFilled.png';
-const UserProfile = () => {
-  const navigate = useNavigate();
-  const [editingFields, setEditingFields] = useState({
-    nickname: false,
-    phone: false,
-    email: false,
-    storeName: false,
-  });
-  const [formData, setFormData] = useState({
-    nickname: '자영업자',
-    phone: '010-3456-7890',
-    email: 'abcde123@naver.com',
-    storeName: '우리 가게',
-  });
-  const [originalData, setOriginalData] = useState({
-    nickname: '자영업자',
-    phone: '010-3456-7890',
-    email: 'abcde123@naver.com',
-    storeName: '우리 가게',
+import {useEffect, useState} from 'react';
+import {useProfile, useSaveBusiness, useUploadImage} from './hooks';
+import ProfileSide from './ProfileSide';
+import ProfileForm from './ProfileForm';
+
+export default function ProfileBusiness() {
+  const {profile} = useProfile();
+  const {save: saveBusiness} = useSaveBusiness();
+  const {upload} = useUploadImage(); // 내부에서 userType 분기(또는 api에서 분기)
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
+    imageUrl: '',
+    email: '',
+    nickName: '',
+    phoneNumber: '',
   });
 
-  const handleEdit = (field) => {
-    setOriginalData((prev) => ({...prev, [field]: formData[field]}));
-    setEditingFields((prev) => ({...prev, [field]: true}));
+  // 서버 응답 반영 (nickname 혼용 가드)
+  useEffect(() => {
+    if (profile) {
+      setProfileData((prev) => ({
+        ...prev,
+        imageUrl: profile.imageUrl ?? '',
+        email: profile.email ?? '', // 표시용(읽기 전용)
+        nickName: profile.nickName ?? profile.nickname ?? '',
+        phoneNumber: profile.phoneNumber ?? '',
+      }));
+    }
+  }, [profile]);
+
+  const handleEdit = () => setIsEditing(true);
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    if (profile) {
+      setProfileData((prev) => ({
+        ...prev,
+        imageUrl: profile.imageUrl ?? '',
+        email: profile.email ?? '',
+        nickName: profile.nickName ?? profile.nickname ?? '',
+        phoneNumber: profile.phoneNumber ?? '',
+      }));
+    }
   };
 
-  const handleSave = (field) => {
-    setEditingFields((prev) => ({...prev, [field]: false}));
-    console.log(`${field} 저장된 데이터:`, formData[field]);
+  const handleSave = async () => {
+    // email은 제외해서 전송
+    const {email, nickname, ...payload} = profileData;
+    await saveBusiness(payload);
+    setIsEditing(false);
   };
 
-  const handleCancel = (field) => {
-    setFormData((prev) => ({...prev, [field]: originalData[field]}));
-    setEditingFields((prev) => ({...prev, [field]: false}));
+  const handleImageUpload = async (file) => {
+    const res = await upload(file);
+    if (res?.profileImageUrl) {
+      setProfileData((p) => ({...p, imageUrl: res.profileImageUrl}));
+    }
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const updateField = (field, value) => {
+    if (field === 'email') return; // 이메일은 변경 불가
+    setProfileData((p) => ({...p, [field]: value}));
   };
 
   return (
-    <div className="ml-64 p-8 min-h-screen">
-      <div className="bg-white p-8 rounded-xl shadow-sm max-w-4xl">
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900">내 정보</h2>
+    <div className="min-w-[1000px] px-[140px] py-[26px]">
+      <div className="flex justify-between mb-[32px]">
+        <h3 className="text-[18px] font-[600]">내 정보</h3>
+        <div className="flex gap-[12px]">
+          {!isEditing ? (
+            <button onClick={handleEdit} className="text-[#4B83E3]">
+              수정
+            </button>
+          ) : (
+            <>
+              <button onClick={handleCancel} className="text-[#4B83E3]">
+                취소
+              </button>
+              <button onClick={handleSave} className="text-[#4B83E3]">
+                저장
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="flex gap-[52px]">
+        {/* 프로필 이미지 영역 */}
+        <div className="flex-shrink-0">
+          <ProfileSide
+            profileImage={profileData.imageUrl} // ← imageUrl 표시
+            onImageUpload={handleImageUpload} // ← 업로드 핸들러
+            isEditing={isEditing}
+          />
         </div>
 
-        <div className="flex gap-16">
-          {/* 프로필 이미지 섹션 */}
-          <div className="flex flex-col items-center">
-            <div className="mb-4">
-              <img src={profileicon} alt="프로필" className="w-24 h-24 rounded-full" />
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <button className="group">
-                <img src={changeicon} alt="프로필 변경" className="w-20 h-8 group-hover:hidden" />
-                <img src={changeiconhover} alt="프로필 변경" className="w-20 h-8 hidden group-hover:block" />
-              </button>
-              <button className="group">
-                <img src={outicon} alt="회원탈퇴" className="w-12 h-5 group-hover:hidden" />
-                <img src={outiconhover} alt="회원탈퇴" className="w-12 h-5 hidden group-hover:block" />
-              </button>
-            </div>
-          </div>
-
-          {/* 사용자 정보 폼 */}
-          <div className="flex-1 max-w-2xl">
-            {/* 닉네임 */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-3">
-                <label className="block text-gray-900 text-base font-semibold">닉네임</label>
-                {!editingFields.nickname ? (
-                  <button
-                    onClick={() => handleEdit('nickname')}
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                  >
-                    수정
-                  </button>
-                ) : (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleSave('nickname')}
-                      className="text-blue-600 text-sm font-medium hover:underline"
-                    >
-                      저장
-                    </button>
-                    <button
-                      onClick={() => handleCancel('nickname')}
-                      className="text-gray-600 text-sm font-medium hover:underline"
-                    >
-                      취소
-                    </button>
-                  </div>
-                )}
-              </div>
-              <input
-                type="text"
-                value={formData.nickname}
-                onChange={(e) => handleInputChange('nickname', e.target.value)}
-                readOnly={!editingFields.nickname}
-                className={`w-full px-4 py-3 border border-gray-300 rounded-xl text-base ${
-                  !editingFields.nickname
-                    ? 'bg-gray-100 text-gray-700 cursor-not-allowed'
-                    : 'bg-white text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
-                }`}
-              />
-            </div>
-
-            {/* 전화번호 */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-3">
-                <label className="block text-gray-900 text-base font-semibold">전화번호</label>
-                {!editingFields.phone ? (
-                  <button
-                    onClick={() => handleEdit('phone')}
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                  >
-                    수정
-                  </button>
-                ) : (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleSave('phone')}
-                      className="text-blue-600 text-sm font-medium hover:underline"
-                    >
-                      저장
-                    </button>
-                    <button
-                      onClick={() => handleCancel('phone')}
-                      className="text-gray-600 text-sm font-medium hover:underline"
-                    >
-                      취소
-                    </button>
-                  </div>
-                )}
-              </div>
-              <input
-                type="text"
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                readOnly={!editingFields.phone}
-                className={`w-full px-4 py-3 border border-gray-300 rounded-xl text-base ${
-                  !editingFields.phone
-                    ? 'bg-gray-100 text-gray-700 cursor-not-allowed'
-                    : 'bg-white text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
-                }`}
-              />
-            </div>
-
-            {/* 이메일 */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-3">
-                <label className="block text-gray-900 text-base font-semibold">이메일</label>
-                {!editingFields.email ? (
-                  <button
-                    onClick={() => handleEdit('email')}
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                  >
-                    수정
-                  </button>
-                ) : (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleSave('email')}
-                      className="text-blue-600 text-sm font-medium hover:underline"
-                    >
-                      저장
-                    </button>
-                    <button
-                      onClick={() => handleCancel('email')}
-                      className="text-gray-600 text-sm font-medium hover:underline"
-                    >
-                      취소
-                    </button>
-                  </div>
-                )}
-              </div>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                readOnly={!editingFields.email}
-                className={`w-full px-4 py-3 border border-gray-300 rounded-xl text-base ${
-                  !editingFields.email
-                    ? 'bg-gray-100 text-gray-700 cursor-not-allowed'
-                    : 'bg-white text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
-                }`}
-              />
-            </div>
-
-            {/* 매장명 */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <label className="block text-gray-900 text-base font-semibold">매장명</label>
-                {!editingFields.storeName ? (
-                  <button
-                    onClick={() => handleEdit('storeName')}
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                  >
-                    수정
-                  </button>
-                ) : (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleSave('storeName')}
-                      className="text-blue-600 text-sm font-medium hover:underline"
-                    >
-                      저장
-                    </button>
-                    <button
-                      onClick={() => handleCancel('storeName')}
-                      className="text-gray-600 text-sm font-medium hover:underline"
-                    >
-                      취소
-                    </button>
-                  </div>
-                )}
-              </div>
-              <input
-                type="text"
-                value={formData.storeName}
-                onChange={(e) => handleInputChange('storeName', e.target.value)}
-                readOnly={!editingFields.storeName}
-                className={`w-full px-4 py-3 border border-gray-300 rounded-xl text-base ${
-                  !editingFields.storeName
-                    ? 'bg-gray-100 text-gray-700 cursor-not-allowed'
-                    : 'bg-white text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200'
-                }`}
-              />
-            </div>
-          </div>
+        {/* 폼 영역 (드롭다운 없음) */}
+        <div className="flex-1">
+          <ProfileForm profileData={profileData} isEditing={isEditing} onFieldChange={updateField} />
         </div>
       </div>
     </div>
   );
-};
-
-export default UserProfile;
+}
