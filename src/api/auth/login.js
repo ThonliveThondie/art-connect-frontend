@@ -9,12 +9,16 @@ export const loginApi = async ({email, password}) => {
       {email, password},
       {
         baseURL: BASE_URL,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
       }
     );
-    return res.data ?? null;
+
+    const rawAuth = res.headers?.authorization || '';
+    const token = rawAuth.replace(/^Bearer\s+/i, '');
+
+    const body = res.data ?? {};
+
+    return {...body, token};
   } catch (err) {
     if (err.response) {
       const msg = err.response.data?.message || `로그인 실패 (${err.response.status})`;
