@@ -19,22 +19,28 @@ import PortfolioAdd from './features/portfolio/add/PortfolioAdd.jsx';
 import ProjectDetail from './features/project/detail/ProjectDetail';
 import Login from './features/auth/Login.jsx';
 import Signup from './features/auth/Signup.jsx';
+import LandingPage from './features/landing/LandingPage.jsx';
+import NotFound from './features/common/NotFound.jsx';
 
-function HomeRedirect() {
-  const userType = useStore((s) => s.userType);
-  if (!userType) return <Navigate to="/login" replace />;
-  return userType === 'business' ? <Navigate to="/dashboard/ai" replace /> : <Navigate to="/new-project" replace />;
+function RequireAuth({children}) {
+  const token = useStore((s) => s.token);
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
 }
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<HomeRedirect />} />
+        <Route path="/" element={<LandingPage />} />
 
-          <Route index element={<Navigate to="/dashboard/ai" replace />} />
-
+        <Route
+          element={
+            <RequireAuth>
+              <Layout />
+            </RequireAuth>
+          }
+        >
           <Route path="/dashboard/ai" element={<AIInput />} />
           <Route path="/dashboard/ai/result" element={<AIResult />} />
 
@@ -55,8 +61,7 @@ const App = () => {
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
           <Route path="/projects/:projectId" element={<ProjectDetail />} />
 
-          {/* 404 */}
-          <Route path="*" element={<div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

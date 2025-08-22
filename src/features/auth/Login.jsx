@@ -108,10 +108,12 @@ function Login() {
       const mappedType = toFrontendUserType(res?.userType);
       setUserType(mappedType);
 
-      // [수정] 성공 후 이동
-      navigate('/', {replace: true});
+      if (res.userType === 'business') {
+        navigate('/dashboard/ai', {replace: true});
+      } else {
+        navigate('/new-project', {replace: true});
+      }
     } catch (err) {
-      // [수정] 메시지 문구: 로그인 실패로 통일
       alert(err?.message || '로그인 실패');
     }
   };
