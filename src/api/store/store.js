@@ -72,3 +72,14 @@ export const deleteStoreImage = async (id) => {
   const {data} = await storeApi.delete(`/api/stores/images/${id}`);
   return data;
 };
+
+// 매장명 조회 API
+export const getStoreName = async () => {
+  try {
+    const {data} = await storeApi.get('/api/stores/store-name');
+    return data;
+  } catch (error) {
+    console.error('매장명 조회 중 오류 발생:', error);
+    throw error;
+  }
+};

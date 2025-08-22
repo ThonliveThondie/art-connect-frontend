@@ -1,4 +1,7 @@
-export default function HomeArtist() {
+import {useNavigate} from 'react-router-dom';
+
+export default function NoProject() {
+  const navigate = useNavigate();
   return (
     <div className="px-[140px] py-[50px] ">
       <h3 className="text-[18px] font-[600] w-40">새 프로젝트 제안</h3>
