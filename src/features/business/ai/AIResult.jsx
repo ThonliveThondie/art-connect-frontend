@@ -1,33 +1,49 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import EmojiPalette from '../../../assets/images/emoji-palette.svg?react';
 import EmojiEyes from '../../../assets/images/emoji-eyes.svg?react';
 import EmojiBag from '../../../assets/images/emoji-bag.svg';
 import DesignerCard from './DesignerCard';
+import {aiRefreshApi} from '../../../api/ai/recommend';
+import {useStore} from '../../../store/useStore';
 
 export default function AIResult() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const searchQuery = location.state?.searchQuery ?? '';
+  const initialRecommendResult = location.state?.recommendResult;
+  const taRef = useRef(null);
+  
+  // 상태 관리
+  const [recommendResult, setRecommendResult] = useState(initialRecommendResult);
+  const [refreshingIndex, setRefreshingIndex] = useState(null); // 새로고침 중인 디자이너 인덱스
+  
+  // Zustand store에서 토큰 가져오기
+  const token = useStore((state) => state.token);
+
+  // API 응답 데이터에서 proposal 추출
+  const proposal = recommendResult?.proposal || {};
+  const recommendedDesigners = recommendResult?.recommendedDesigners || [];
+  const sessionId = recommendResult?.sessionId;
+
+  // API 데이터를 기반으로 summaryData 구성
   const summaryData = [
     {
       icon: <EmojiPalette />,
       title: '디자인 방향',
-      items: ['따뜻하고 아늑한 분위기', '감성적인 빈티지', '톤다운된 파스텔 계열 색상'],
+      content: proposal.designDirection || '디자인 방향 정보가 없습니다.',
     },
     {
       icon: <EmojiEyes />,
       title: '타겟 고객',
-      items: ['20대 여성', 'SNS 감성 카페를 선호하는 고객층', '기타 등등'],
+      content: proposal.targetCustomer || '타겟 고객 정보가 없습니다.',
     },
     {
       icon: <img src={EmojiBag} alt="가방 이모지" className="w-4 h-4" />,
       title: '필요한 디자인',
-      items: ['로고', '메뉴판', '포장 디자인'],
+      content: proposal.requiredDesigns || '필요한 디자인 정보가 없습니다.',
     },
   ];
-
-  const location = useLocation();
-  const navigate = useNavigate();
-  const searchQuery = location.state?.searchQuery ?? '';
-  const taRef = useRef(null);
 
   useEffect(() => {
     const el = taRef.current;
@@ -37,12 +53,64 @@ export default function AIResult() {
     el.style.height = h + 'px';
   }, [searchQuery]);
 
-  useEffect(() => {
-    if (!location.state) {
-      // state가 없으면 AIInput.jsx 페이지로 이동
-      // navigate('/ai-input');
+  // 개별 디자이너 새로고침 함수
+  const handleRefreshSingleDesigner = async (designerIndex) => {
+    if (!sessionId || !token || refreshingIndex !== null) {
+      return;
     }
-  }, [location.state, navigate]);
+
+    setRefreshingIndex(designerIndex);
+    
+    try {
+      // 토큰이 없으면 로그인 페이지로 리디렉션
+      if (!token) {
+        alert('로그인이 필요합니다.');
+        navigate('/login');
+        return;
+      }
+
+      // 새로운 디자이너 추천 API 호출
+      const result = await aiRefreshApi(sessionId, token);
+      
+      console.log('새로고침 API 응답:', result); // 디버깅용 로그
+      
+      // 새로고침 API는 디자이너 배열을 직접 반환
+      // 초기 추천과 다른 응답 구조를 가질 수 있음
+      const newDesigners = Array.isArray(result) ? result : (result?.recommendedDesigners || []);
+      
+      if (newDesigners.length > 0) {
+        // 새로운 디자이너가 있으면 해당 인덱스의 디자이너만 교체
+        const newDesigner = newDesigners[0]; // 첫 번째 새로운 디자이너 사용
+        
+        setRecommendResult(prev => ({
+          ...prev,
+          recommendedDesigners: prev.recommendedDesigners.map((designer, index) => 
+            index === designerIndex ? newDesigner : designer
+          )
+        }));
+      }
+      
+    } catch (error) {
+      // 인증 오류인 경우 로그인 페이지로 리디렉션
+      if (error.message.includes('401') || error.message.includes('인증')) {
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        navigate('/login');
+        return;
+      }
+      
+      // 기타 오류 처리
+      alert(error.message || '새로운 디자이너 추천 요청 중 오류가 발생했습니다.');
+    } finally {
+      setRefreshingIndex(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!location.state || !initialRecommendResult) {
+      // state가 없거나 recommendResult가 없으면 AI 입력 페이지로 이동
+      navigate('/dashboard/ai', { replace: true });
+    }
+  }, [location.state, initialRecommendResult, navigate]);
 
   return (
     <div className="w-full px-[20px] py-[60px]">
@@ -72,11 +140,9 @@ export default function AIResult() {
                   <span className="text-[16px] font-semibold">{block.title}</span>
                 </div>
 
-                <ul className="list-disc list-inside space-y-[10px] tiny-marker">
-                  {block.items.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
+                <p className="text-[14px] leading-relaxed text-gray-700">
+                  {block.content}
+                </p>
               </div>
             ))}
           </div>
@@ -86,8 +152,22 @@ export default function AIResult() {
         <div>
           <h3 className="mb-[18px] font-[600] text-[18px]">매칭 디자이너</h3>
           <div className="flex flex-wrap gap-10 justify-start md:justify-between">
-            <DesignerCard />
-            <DesignerCard />
+            {recommendedDesigners.length > 0 ? (
+              recommendedDesigners.map((designer, index) => (
+                <DesignerCard 
+                  key={`${designer.userId}-${index}`} 
+                  designerId={designer.userId}
+                  designer={designer}
+                  designerIndex={index}
+                  onRefresh={() => handleRefreshSingleDesigner(index)}
+                  isRefreshing={refreshingIndex === index}
+                />
+              ))
+            ) : (
+              <div className="w-full text-center py-8 text-gray-500">
+                추천할 수 있는 디자이너가 없습니다.
+              </div>
+            )}
           </div>
         </div>
       </section>
