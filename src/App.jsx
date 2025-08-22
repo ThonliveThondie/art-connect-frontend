@@ -20,6 +20,7 @@ import ProjectDetail from './features/project/detail/ProjectDetail';
 import Login from './features/auth/Login.jsx';
 import Signup from './features/auth/Signup.jsx';
 import LandingPage from './features/landing/LandingPage.jsx';
+import NotFound from './features/common/NotFound.jsx';
 
 function RequireAuth({children}) {
   const token = useStore((s) => s.token);
@@ -60,8 +61,7 @@ const App = () => {
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
           <Route path="/projects/:projectId" element={<ProjectDetail />} />
 
-          {/* 404 */}
-          <Route path="*" element={<div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
