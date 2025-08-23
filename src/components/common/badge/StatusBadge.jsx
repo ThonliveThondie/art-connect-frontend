@@ -5,10 +5,6 @@ export default function StatusBadge({status = 'PENDING', className = ''}) {
     PENDING: {dot: 'bg-[#F59E0B]', text: '시안 제출 대기 중'},
     FEEDBACK_WAITING: {dot: 'bg-[#3B82F6]', text: '피드백 대기 중'},
     ACCEPTED: {dot: 'bg-[#10B981]', text: '피드백 전달 완료'},
-    // 기존 상태값과의 호환성을 위해 유지
-    pending: {dot: 'bg-[#F59E0B]', text: '시안 제출 대기 중'},
-    reviewing: {dot: 'bg-[#3B82F6]', text: '피드백 대기 중'},
-    done: {dot: 'bg-[#10B981]', text: '피드백 전달 완료'},
   };
 
   const current = STATUS[status] ?? STATUS.PENDING;

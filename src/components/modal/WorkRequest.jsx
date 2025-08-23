@@ -132,7 +132,7 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
           designerId,
           id: Date.now(),
           createdAt: new Date().toISOString(),
-          status: 'pending',
+          status: 'PENDING',
         });
       }
       

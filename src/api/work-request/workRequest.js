@@ -172,6 +172,37 @@ export const getWorkRequestDetail = async (workRequestId) => {
   }
 };
 
+// 소상공인이 보낸 작업의뢰서 단건 조회 API
+export const getBusinessOwnerWorkRequestDetail = async (workRequestId) => {
+  try {
+    const response = await workRequestApi.get(`/api/work-request/business-owner/${workRequestId}`);
+    return response.data;
+  } catch (error) {
+    console.error('소상공인 작업의뢰서 상세 조회 중 오류 발생:', error);
+    
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '작업의뢰서 상세 조회에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('작업의뢰서를 조회할 권한이 없습니다.');
+      } else if (status === 404) {
+        throw new Error('해당 작업의뢰서를 찾을 수 없습니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      throw new Error('작업의뢰서 상세 조회 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
 // 작업의뢰서 거절 API
 export const rejectWorkRequest = async (workRequestId) => {
   try {
@@ -263,6 +294,256 @@ export const getAcceptedWorkRequestList = async () => {
       throw new Error('네트워크 연결을 확인해주세요.');
     } else {
       throw new Error('수락한 작업 목록 조회 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
+// 소상공인의 수락된 작업 목록 조회 API
+export const getBusinessOwnerAcceptedWorkRequestList = async () => {
+  try {
+    const response = await workRequestApi.get('/api/work-request/business-owner/accepted/simple');
+    return response.data;
+  } catch (error) {
+    console.error('소상공인 수락된 작업 목록 조회 중 오류 발생:', error);
+    
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '수락된 작업 목록 조회에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('수락된 작업 목록을 조회할 권한이 없습니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      throw new Error('수락된 작업 목록 조회 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
+// 작업 제출물 조회
+export const getWorkSubmissions = async (workRequestId) => {
+  try {
+    const response = await workRequestApi.get(`/api/work-submissions/work-request/${workRequestId}`);
+    return response.data;
+  } catch (error) {
+    console.error('작업 제출물 조회 중 오류 발생:', error);
+    
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '작업 제출물 조회에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('작업 제출물을 조회할 권한이 없습니다.');
+      } else if (status === 404) {
+        throw new Error('해당 작업 제출물을 찾을 수 없습니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      throw new Error('작업 제출물 조회 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
+// 시안 업로드 API
+export const submitWorkDesign = async (workRequestId, formData) => {
+  try {
+    // FormData 객체 생성 (이미 formData가 FormData 인스턴스라고 가정)
+    const requestFormData = new FormData();
+    
+    // workSubmission JSON 데이터를 Blob으로 변환하여 application/json Content-Type 명시
+    const workSubmissionData = {
+      comment: formData.get('comment') || ''
+    };
+    const workSubmissionBlob = new Blob([JSON.stringify(workSubmissionData)], {
+      type: 'application/json'
+    });
+    requestFormData.append('workSubmission', workSubmissionBlob, 'workSubmission.json');
+    
+    // 이미지 파일들 추가
+    const images = formData.getAll('images');
+    if (images && images.length > 0) {
+      images.forEach((file) => {
+        if (file instanceof File) {
+          requestFormData.append('images', file);
+        }
+      });
+    }
+
+    // API 요청
+    const response = await workRequestApi.post(`/api/work-submissions/work-request/${workRequestId}`, requestFormData);
+
+    return response.data;
+  } catch (error) {
+    console.error('시안 업로드 중 오류 발생:', error);
+    
+    // 에러 메시지 처리
+    if (error.response) {
+      // 서버에서 응답한 에러
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '시안 업로드에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('시안을 업로드할 권한이 없습니다.');
+      } else if (status === 404) {
+        throw new Error('해당 작업 요청을 찾을 수 없습니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      // 네트워크 오류
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      // 기타 오류
+      throw new Error('시안 업로드 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
+// 피드백 작성 API
+export const submitFeedback = async (workSubmissionId, feedbackData) => {
+  try {
+    // API 요청
+    const response = await workRequestApi.post(`/api/work-submissions/${workSubmissionId}/feedback`, feedbackData);
+    return response.data;
+  } catch (error) {
+    console.error('피드백 작성 중 오류 발생:', error);
+    
+    // 에러 메시지 처리
+    if (error.response) {
+      // 서버에서 응답한 에러
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '피드백 작성에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('피드백을 작성할 권한이 없습니다.');
+      } else if (status === 404) {
+        throw new Error('해당 작업 제출물을 찾을 수 없습니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      // 네트워크 오류
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      // 기타 오류
+      throw new Error('피드백 작성 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
+// 프로젝트 완료 API
+export const completeWorkRequest = async (workRequestId) => {
+  try {
+    const response = await workRequestApi.post(`/api/work-request/${workRequestId}/complete`);
+    return response.data;
+  } catch (error) {
+    console.error('프로젝트 완료 중 오류 발생:', error);
+    
+    // 에러 메시지 처리
+    if (error.response) {
+      // 서버에서 응답한 에러
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '프로젝트 완료에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('프로젝트를 완료할 권한이 없습니다.');
+      } else if (status === 404) {
+        throw new Error('해당 작업 요청을 찾을 수 없습니다.');
+      } else if (status === 409) {
+        throw new Error('이미 완료된 프로젝트입니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      // 네트워크 오류
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      // 기타 오류
+      throw new Error('프로젝트 완료 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
+// 소상공인의 완료된 프로젝트 목록 조회 API
+export const getBusinessOwnerCompletedWorkRequestList = async () => {
+  try {
+    const response = await workRequestApi.get('/api/work-request/business-owner/completed');
+    return response.data;
+  } catch (error) {
+    console.error('소상공인 완료된 프로젝트 목록 조회 중 오류 발생:', error);
+    
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '완료된 프로젝트 목록 조회에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('완료된 프로젝트 목록을 조회할 권한이 없습니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      throw new Error('완료된 프로젝트 목록 조회 중 알 수 없는 오류가 발생했습니다.');
+    }
+  }
+};
+
+// 디자이너의 완료된 프로젝트 목록 조회 API
+export const getDesignerCompletedWorkRequestList = async () => {
+  try {
+    const response = await workRequestApi.get('/api/work-request/designer/completed');
+    return response.data;
+  } catch (error) {
+    console.error('디자이너 완료된 프로젝트 목록 조회 중 오류 발생:', error);
+    
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || error.response.data?.error || '완료된 프로젝트 목록 조회에 실패했습니다.';
+      
+      if (status === 401) {
+        throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+      } else if (status === 403) {
+        throw new Error('완료된 프로젝트 목록을 조회할 권한이 없습니다.');
+      } else if (status >= 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        throw new Error(message);
+      }
+    } else if (error.request) {
+      throw new Error('네트워크 연결을 확인해주세요.');
+    } else {
+      throw new Error('완료된 프로젝트 목록 조회 중 알 수 없는 오류가 발생했습니다.');
     }
   }
 };

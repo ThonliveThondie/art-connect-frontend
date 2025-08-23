@@ -1,23 +1,60 @@
 import React, {useState} from 'react';
 import FileUpload from '@/components/common/form/FileUpload';
 import '@/components/common/form/form.css';
+import {submitWorkDesign} from '@/api/work-request/workRequest';
 
-export default function Uploader({className = ''}) {
+export default function Uploader({className = '', workRequestId, onUploadSuccess}) {
   const [files, setFiles] = useState([]);
   const [description, setDescription] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = (newFiles) => {
     setFiles(newFiles);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (files.length === 0) {
       alert('파일을 선택해주세요.');
       return;
     }
 
-    setFiles([]);
-    setDescription('');
+    if (!description.trim()) {
+      alert('시안에 대한 설명을 입력해주세요.');
+      return;
+    }
+
+    if (!workRequestId) {
+      alert('작업 요청 정보가 없습니다.');
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      // 시안 업로드 API 호출
+      const formData = new FormData();
+      formData.append('comment', description.trim());
+      files.forEach((file) => {
+        formData.append('images', file);
+      });
+      
+      await submitWorkDesign(workRequestId, formData);
+      
+      alert('시안이 성공적으로 업로드되었습니다!');
+      
+      setFiles([]);
+      setDescription('');
+      
+      // 부모 컴포넌트에 업로드 성공 알림
+      if (onUploadSuccess) {
+        onUploadSuccess();
+      }
+    } catch (error) {
+      console.error('시안 업로드 실패:', error);
+      alert('시안 업로드에 실패했습니다: ' + (error.message || '알 수 없는 오류'));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -58,12 +95,14 @@ export default function Uploader({className = ''}) {
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={files.length === 0}
+          disabled={files.length === 0 || !description.trim() || isUploading}
           className={`px-[24px] py-[6px] rounded-[8px] font-[700] transition-colors w-[120px] text-center ${
-            files.length === 0 ? 'bg-gray-300 text-gray-500' : 'bg-[#9E9692] text-white hover:bg-[#8A827E]'
+            files.length === 0 || !description.trim() || isUploading
+              ? 'bg-gray-300 text-gray-500' 
+              : 'bg-[#9E9692] text-white hover:bg-[#8A827E]'
           }`}
         >
-          업로드
+          {isUploading ? '업로드 중...' : '업로드'}
         </button>
       </div>
     </div>

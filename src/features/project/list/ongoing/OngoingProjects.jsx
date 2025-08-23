@@ -2,20 +2,55 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import ListCard from './ListCard';
 import StatusBadge from '@/components/common/badge/StatusBadge';
-import {getAcceptedWorkRequestList} from '../../../../api/work-request/workRequest';
+import {getAcceptedWorkRequestList, getBusinessOwnerAcceptedWorkRequestList} from '../../../../api/work-request/workRequest';
+import {useStore} from '@/store/useStore';
 
 export default function OngoingProjects() {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  // Zustand store에서 사용자 유형 가져오기
+  const userType = useStore((state) => state.userType);
 
   // 수락한 작업 목록 조회
   const fetchAcceptedProjects = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const acceptedProjects = await getAcceptedWorkRequestList();
+      let acceptedProjects;
+      let currentUserType = userType;
+      
+      // userType이 없으면 토큰이 있는지 확인하고 일단 디자이너로 시도
+      if (!currentUserType) {
+        const token = useStore.getState().token;
+        if (!token) {
+          throw new Error('로그인이 필요합니다.');
+        }
+        // userType이 없으면 일단 디자이너로 시도해보고, 실패하면 소상공인으로 시도
+        currentUserType = 'artist';
+      }
+      
+      // 사용자 유형에 따라 다른 API 호출
+      if (currentUserType === 'artist') {
+        try {
+          // 디자이너(아티스트)인 경우 - 디자이너가 수락한 작업 목록
+          acceptedProjects = await getAcceptedWorkRequestList();
+        } catch (error) {
+          // 권한 오류면 소상공인일 가능성이 있음
+          if (error.message.includes('권한') && !userType) {
+            acceptedProjects = await getBusinessOwnerAcceptedWorkRequestList();
+          } else {
+            throw error;
+          }
+        }
+      } else if (currentUserType === 'business') {
+        // 소상공인인 경우 - 소상공인의 수락된 작업 목록
+        acceptedProjects = await getBusinessOwnerAcceptedWorkRequestList();
+      } else {
+        throw new Error('사용자 유형을 확인할 수 없습니다.');
+      }
       
       // API 응답 데이터를 컴포넌트에서 사용할 형식으로 변환
       const transformedProjects = acceptedProjects.map(project => ({
@@ -34,10 +69,14 @@ export default function OngoingProjects() {
     }
   };
 
-  // 컴포넌트 마운트 시 수락한 작업 목록 조회
+  // 컴포넌트 마운트 시 및 사용자 유형 변경 시 수락한 작업 목록 조회
   useEffect(() => {
-    fetchAcceptedProjects();
-  }, []);
+    // userType이 있거나, 토큰이 있으면 시도 (userType은 나중에 설정될 수 있음)
+    const token = useStore.getState().token;
+    if (userType || token) {
+      fetchAcceptedProjects();
+    }
+  }, [userType]);
 
   const handleCardClick = (projectId) => {
     navigate(`/projects/${projectId}`);

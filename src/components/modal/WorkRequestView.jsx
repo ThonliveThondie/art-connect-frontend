@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {getWorkRequestDetail} from '../../api/work-request/workRequest';
+import {getWorkRequestDetail, getBusinessOwnerWorkRequestDetail} from '../../api/work-request/workRequest';
 
 // 영문 디자인 카테고리를 한글로 변환하는 함수
 const convertDesignCategoriesToKorean = (categories) => {
@@ -20,7 +20,7 @@ const convertDesignCategoriesToKorean = (categories) => {
   return categories.map(category => categoryMap[category] || category);
 };
 
-export default function WorkRequestViewModal({isOpen, onClose, workRequestId}) {
+export default function WorkRequestViewModal({isOpen, onClose, workRequestId, userType}) {
   const [workRequestData, setWorkRequestData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,7 +32,17 @@ export default function WorkRequestViewModal({isOpen, onClose, workRequestId}) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await getWorkRequestDetail(workRequestId);
+      let data;
+      
+      // 사용자 유형에 따라 다른 API 호출
+      if (userType === 'business') {
+        // 소상공인: 자신이 보낸 작업의뢰서 조회
+        data = await getBusinessOwnerWorkRequestDetail(workRequestId);
+      } else {
+        // 디자이너: 받은 작업의뢰서 조회
+        data = await getWorkRequestDetail(workRequestId);
+      }
+      
       setWorkRequestData(data);
     } catch (error) {
       console.error('작업의뢰서 상세 조회 실패:', error);
