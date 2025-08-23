@@ -99,22 +99,22 @@ function Login() {
       const res = await loginApi({email, password});
       // res: { userId, userType, message, token }
 
-      // [추가] 토큰 전역 저장 (필요 시 localStorage 연동은 추후)
       if (res.token) setToken(res.token);
 
-      console.log('🔑 받은 토큰:', res.token);
+      console.log('token:', res.token);
+      console.log('userType:', res.userType);
 
-      // [수정] 백엔드 타입을 프론트 타입으로 매핑
       const mappedType = toFrontendUserType(res?.userType);
       setUserType(mappedType);
 
-      if (res.userType === 'business') {
+      if (mappedType === 'business') {
         navigate('/dashboard/ai', {replace: true});
       } else {
         navigate('/new-project', {replace: true});
       }
     } catch (err) {
-      alert(err?.message || '로그인 실패');
+      const message = err?.response?.data?.message || err?.message || '로그인에 실패했습니다.';
+      alert(message);
     }
   };
 
