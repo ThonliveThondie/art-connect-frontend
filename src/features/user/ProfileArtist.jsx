@@ -4,7 +4,7 @@ import {useSaveDesigner, useUploadImage} from './hooks';
 import ProfileSide from './ProfileSide';
 import ProfileForm from './ProfileForm';
 import ExtraFields from './ExtraFields';
-import {CATEGORY_OPTIONS, STYLE_OPTIONS, toValueArray} from './ProfileOptions';
+import {CATEGORY_OPTIONS, STYLE_OPTIONS, toValueArray} from '@/api/utils/mapper';
 
 export default function ProfileArtist() {
   const {profile} = useProfile();
