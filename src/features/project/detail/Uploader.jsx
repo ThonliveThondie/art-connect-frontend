@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import FileUpload from '@/components/common/form/FileUpload';
 import '@/components/common/form/form.css';
 import {submitWorkDesign} from '@/api/work-request/workRequest';
+import {Loader2} from 'lucide-react';
 
 export default function Uploader({className = '', workRequestId, onUploadSuccess}) {
   const [files, setFiles] = useState([]);
@@ -29,7 +30,7 @@ export default function Uploader({className = '', workRequestId, onUploadSuccess
     }
 
     setIsUploading(true);
-    
+
     try {
       // 시안 업로드 API 호출
       const formData = new FormData();
@@ -37,14 +38,14 @@ export default function Uploader({className = '', workRequestId, onUploadSuccess
       files.forEach((file) => {
         formData.append('images', file);
       });
-      
+
       await submitWorkDesign(workRequestId, formData);
-      
+
       alert('시안이 성공적으로 업로드되었습니다!');
-      
+
       setFiles([]);
       setDescription('');
-      
+
       // 부모 컴포넌트에 업로드 성공 알림
       if (onUploadSuccess) {
         onUploadSuccess();
@@ -98,11 +99,18 @@ export default function Uploader({className = '', workRequestId, onUploadSuccess
           disabled={files.length === 0 || !description.trim() || isUploading}
           className={`px-[24px] py-[6px] rounded-[8px] font-[700] transition-colors w-[120px] text-center ${
             files.length === 0 || !description.trim() || isUploading
-              ? 'bg-gray-300 text-gray-500' 
+              ? 'bg-gray-300 text-gray-500'
               : 'bg-[#9E9692] text-white hover:bg-[#8A827E]'
           }`}
         >
-          {isUploading ? '업로드 중...' : '업로드'}
+          {isUploading ? (
+            <span className="inline-flex items-center gap-2">
+              <Loader2 size={16} className="animate-spin" />
+              <span>업로드</span>
+            </span>
+          ) : (
+            '업로드'
+          )}
         </button>
       </div>
     </div>

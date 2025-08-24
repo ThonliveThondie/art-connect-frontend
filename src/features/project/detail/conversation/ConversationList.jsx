@@ -3,14 +3,14 @@ import DraftPost from './DraftPost';
 import CommentItem from './CommentItem';
 import CommentInput from './CommentInput';
 
-export default function ConversationList({submissions = [], workRequestId, onUpdate}) {
+export default function ConversationList({submissions = [], onUpdate}) {
   // API 데이터를 기반으로 대화 목록 생성
   const [conversations, setConversations] = useState([]);
 
   // submissions 데이터를 대화 목록으로 변환
   useEffect(() => {
     const convertedConversations = [];
-    
+
     submissions.forEach((submission) => {
       // 시안 게시물 추가
       convertedConversations.push({
@@ -21,7 +21,7 @@ export default function ConversationList({submissions = [], workRequestId, onUpd
           profile: submission.designerProfileImageUrl || '/src/assets/images/default-profile-img.svg',
         },
         content: submission.comment,
-        images: submission.images?.map(img => img.imageUrl) || [],
+        images: submission.images?.map((img) => img.imageUrl) || [],
         createdAt: submission.createdAt,
       });
 
@@ -45,7 +45,7 @@ export default function ConversationList({submissions = [], workRequestId, onUpd
 
     // 생성일자 순으로 정렬
     convertedConversations.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    
+
     setConversations(convertedConversations);
   }, [submissions]);
 
@@ -100,9 +100,9 @@ export default function ConversationList({submissions = [], workRequestId, onUpd
                 images={conversation.images || []}
               />
             ) : (
-              <CommentItem 
-                username={conversation.username} 
-                content={conversation.content} 
+              <CommentItem
+                username={conversation.username}
+                content={conversation.content}
                 authorType={conversation.authorType}
               />
             )}
@@ -111,9 +111,9 @@ export default function ConversationList({submissions = [], workRequestId, onUpd
       </div>
 
       {/* 댓글 입력 */}
-      <div>
-        <CommentInput 
-          onAddComment={addComment} 
+      <div className="mt-10">
+        <CommentInput
+          onAddComment={addComment}
           workSubmissionId={submissions.length > 0 ? submissions[submissions.length - 1]?.id : null}
           onFeedbackSuccess={onUpdate}
           submissions={submissions}
