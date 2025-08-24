@@ -8,40 +8,34 @@ import PortfolioDetail from './features/portfolio/detail/PortfolioDetail';
 import NewProject from './features/artist/NewProject.jsx';
 import NoProject from './features/artist/NoProject.jsx';
 import StoreManagement from './features/business/store/StoreManagement.jsx';
-import PaymentHistory from './features/payment/PaymentHistory.jsx';
+import PaymentHistory from './features/payment/PaymentHistory';
 import ProfileBusiness from './features/user/ProfileBusiness.jsx';
-import RevenueHistory from './features/revenue/RevenueHistory.jsx';
+import RevenueHistory from './features/payment/RevenueHistory.jsx';
 import ProfileArtist from './features/user/ProfileArtist.jsx';
 import Portfolio from './features/portfolio/list/Portfolio.jsx';
 import OngoingProjects from './features/project/list/ongoing/OngoingProjects';
 import CompletedProjects from './features/project/list/completed/CompletedProjects.jsx';
 import PortfolioAdd from './features/portfolio/add/PortfolioAdd.jsx';
-import PortfolioEdit from './features/portfolio/edit/PortfolioEdit.jsx';
 import ProjectDetail from './features/project/detail/ProjectDetail';
 import Login from './features/auth/Login.jsx';
 import Signup from './features/auth/Signup.jsx';
-import LandingPage from './features/landing/LandingPage.jsx';
-import NotFound from './features/common/NotFound.jsx';
+import PortfolioEdit from './features/portfolio/edit/PortfolioEdit';
 
-function RequireAuth({children}) {
-  const token = useStore((s) => s.token);
-  if (!token) return <Navigate to="/login" replace />;
-  return children;
+function HomeRedirect() {
+  const userType = useStore((s) => s.userType);
+  if (!userType) return <Navigate to="/login" replace />;
+  return userType === 'business' ? <Navigate to="/dashboard/ai" replace /> : <Navigate to="/new-project" replace />;
 }
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route element={<Layout />}>
+          <Route index element={<HomeRedirect />} />
 
-        <Route
-          element={
-            <RequireAuth>
-              <Layout />
-            </RequireAuth>
-          }
-        >
+          <Route index element={<Navigate to="/dashboard/ai" replace />} />
+
           <Route path="/dashboard/ai" element={<AIInput />} />
           <Route path="/dashboard/ai/result" element={<AIResult />} />
 
@@ -54,16 +48,17 @@ const App = () => {
           <Route path="/payment" element={<PaymentHistory />} />
           <Route path="/profile/business" element={<ProfileBusiness />} />
 
-          <Route path="/portfolio/add" element={<PortfolioAdd />} />
-          <Route path="/portfolio/:id/edit" element={<PortfolioEdit />} />
-          <Route path="/portfolio/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/portfolio/add" element={<PortfolioAdd />} />
+          <Route path="/portfolio/item/:id" element={<PortfolioDetail />} />
+          <Route path="/portfolio/item/:id/edit" element={<PortfolioEdit />} />
 
           <Route path="/projects/completed" element={<CompletedProjects />} />
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
           <Route path="/projects/:projectId" element={<ProjectDetail />} />
 
-          <Route path="*" element={<NotFound />} />
+          {/* 404 */}
+          <Route path="*" element={<div className="p-6 text-xl">페이지를 찾을 수 없습니다</div>} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

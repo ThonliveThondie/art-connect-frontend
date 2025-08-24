@@ -6,7 +6,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
-  headers: {'Content-Type': 'application/json'},
 });
 
 apiClient.interceptors.request.use(
@@ -37,5 +36,11 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const postForm = (url, formData, extra = {}) =>
+  apiClient.post(url, formData, {
+    headers: {'Content-Type': 'multipart/form-data'},
+    ...extra,
+  });
 
 export default apiClient;

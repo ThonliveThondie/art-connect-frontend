@@ -13,11 +13,11 @@ export default function AIResult() {
   const searchQuery = location.state?.searchQuery ?? '';
   const initialRecommendResult = location.state?.recommendResult;
   const taRef = useRef(null);
-  
+
   // 상태 관리
   const [recommendResult, setRecommendResult] = useState(initialRecommendResult);
   const [refreshingIndex, setRefreshingIndex] = useState(null); // 새로고침 중인 디자이너 인덱스
-  
+
   // Zustand store에서 토큰 가져오기
   const token = useStore((state) => state.token);
 
@@ -60,7 +60,7 @@ export default function AIResult() {
     }
 
     setRefreshingIndex(designerIndex);
-    
+
     try {
       // 토큰이 없으면 로그인 페이지로 리디렉션
       if (!token) {
@@ -71,25 +71,22 @@ export default function AIResult() {
 
       // 새로운 디자이너 추천 API 호출
       const result = await aiRefreshApi(sessionId, token);
-      
+
       console.log('새로고침 API 응답:', result); // 디버깅용 로그
-      
-      // 새로고침 API는 디자이너 배열을 직접 반환
-      // 초기 추천과 다른 응답 구조를 가질 수 있음
-      const newDesigners = Array.isArray(result) ? result : (result?.recommendedDesigners || []);
-      
+
+      const newDesigners = Array.isArray(result) ? result : result?.recommendedDesigners || [];
+
       if (newDesigners.length > 0) {
         // 새로운 디자이너가 있으면 해당 인덱스의 디자이너만 교체
         const newDesigner = newDesigners[0]; // 첫 번째 새로운 디자이너 사용
-        
-        setRecommendResult(prev => ({
+
+        setRecommendResult((prev) => ({
           ...prev,
-          recommendedDesigners: prev.recommendedDesigners.map((designer, index) => 
+          recommendedDesigners: prev.recommendedDesigners.map((designer, index) =>
             index === designerIndex ? newDesigner : designer
-          )
+          ),
         }));
       }
-      
     } catch (error) {
       // 인증 오류인 경우 로그인 페이지로 리디렉션
       if (error.message.includes('401') || error.message.includes('인증')) {
@@ -97,7 +94,7 @@ export default function AIResult() {
         navigate('/login');
         return;
       }
-      
+
       // 기타 오류 처리
       alert(error.message || '새로운 디자이너 추천 요청 중 오류가 발생했습니다.');
     } finally {
@@ -108,7 +105,7 @@ export default function AIResult() {
   useEffect(() => {
     if (!location.state || !initialRecommendResult) {
       // state가 없거나 recommendResult가 없으면 AI 입력 페이지로 이동
-      navigate('/dashboard/ai', { replace: true });
+      navigate('/dashboard/ai', {replace: true});
     }
   }, [location.state, initialRecommendResult, navigate]);
 
@@ -130,7 +127,7 @@ export default function AIResult() {
         </div>
 
         {/* AI 제안 요약 */}
-        <div className="">
+        <div>
           <h3 className="mb-[18px] font-[600] text-[18px]">AI 제안 요약</h3>
           <div className="flex flex-col gap-[12px]">
             {summaryData.map((block, idx) => (
@@ -140,9 +137,7 @@ export default function AIResult() {
                   <span className="text-[16px] font-semibold">{block.title}</span>
                 </div>
 
-                <p className="text-[14px] leading-relaxed text-gray-700">
-                  {block.content}
-                </p>
+                <p className="text-[14px] leading-relaxed text-gray-700">{block.content}</p>
               </div>
             ))}
           </div>
@@ -151,23 +146,33 @@ export default function AIResult() {
         {/* 매칭 디자이너 */}
         <div>
           <h3 className="mb-[18px] font-[600] text-[18px]">매칭 디자이너</h3>
-          <div className="flex flex-wrap gap-10 justify-start md:justify-between">
-            {recommendedDesigners.length > 0 ? (
-              recommendedDesigners.map((designer, index) => (
-                <DesignerCard 
-                  key={`${designer.userId}-${index}`} 
-                  designerId={designer.userId}
-                  designer={designer}
-                  designerIndex={index}
-                  onRefresh={() => handleRefreshSingleDesigner(index)}
-                  isRefreshing={refreshingIndex === index}
-                />
-              ))
-            ) : (
-              <div className="w-full text-center py-8 text-gray-500">
-                추천할 수 있는 디자이너가 없습니다.
-              </div>
-            )}
+
+          {/* 중앙 레일 + 2열 그리드 + 갭 유동 + 동일 높이 */}
+          <div className="mx-auto w-full max-w-[1280px]">
+            <div
+              className="
+                grid grid-cols-1 md:grid-cols-2
+                items-stretch
+                gap-[clamp(16px,2vw,40px)]
+              "
+            >
+              {recommendedDesigners.length > 0 ? (
+                recommendedDesigners.map((designer, index) => (
+                  <DesignerCard
+                    key={`${designer.userId}-${index}`}
+                    designerId={designer.userId}
+                    designer={designer}
+                    designerIndex={index}
+                    onRefresh={() => handleRefreshSingleDesigner(index)}
+                    isRefreshing={refreshingIndex === index}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full w-full text-center py-8 text-gray-500">
+                  추천할 수 있는 디자이너가 없습니다.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

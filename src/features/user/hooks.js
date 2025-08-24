@@ -26,7 +26,7 @@ export const useSaveBusiness = () => {
 };
 
 export const useUploadImage = () => {
-  const {userType} = useStore.getState();
+  const userType = useStore((s) => s.userType);
 
   const upload = async (file) => {
     if (!file) return null;

@@ -1,6 +1,9 @@
 import '../../components/common/form/form.css';
 
-export default function ProfileForm({profileData, isEditing, onFieldChange}) {
+export default function ProfileForm({profileData, isEditing, onFieldChange, userType}) {
+  // 비지니스 사용자일 때 닉네임 수정 불가능
+  const isNicknameDisabled = userType === 'BUSINESS' || !isEditing;
+
   return (
     <div>
       <div>
@@ -12,10 +15,10 @@ export default function ProfileForm({profileData, isEditing, onFieldChange}) {
         <label className="label-title">닉네임</label>
         <input
           type="text"
-          value={profileData.nickName || ''}
-          onChange={(e) => onFieldChange('nickName', e.target.value)}
-          disabled={!isEditing}
-          className={`form-input ${!isEditing ? 'bg-[#F8F7F6]' : ''}`}
+          value={profileData.nickname || ''}
+          onChange={(e) => onFieldChange('nickname', e.target.value)}
+          disabled={isNicknameDisabled}
+          className={`form-input ${isNicknameDisabled ? 'bg-[#F8F7F6]' : ''}`}
           placeholder="닉네임을 입력하세요"
         />
       </div>

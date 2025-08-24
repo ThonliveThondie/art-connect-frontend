@@ -13,7 +13,7 @@ export default function ProfileBusiness() {
   const [profileData, setProfileData] = useState({
     imageUrl: '',
     email: '',
-    nickName: '',
+    nickname: '',
     phoneNumber: '',
   });
 
@@ -24,7 +24,7 @@ export default function ProfileBusiness() {
         ...prev,
         imageUrl: profile.imageUrl ?? '',
         email: profile.email ?? '', // 표시용(읽기 전용)
-        nickName: profile.nickName ?? profile.nickname ?? '',
+        nickname: profile.nickName ?? profile.nickname ?? '',
         phoneNumber: profile.phoneNumber ?? '',
       }));
     }
@@ -39,14 +39,14 @@ export default function ProfileBusiness() {
         ...prev,
         imageUrl: profile.imageUrl ?? '',
         email: profile.email ?? '',
-        nickName: profile.nickName ?? profile.nickname ?? '',
+        nickname: profile.nickName ?? profile.nickname ?? '',
         phoneNumber: profile.phoneNumber ?? '',
       }));
     }
   };
 
   const handleSave = async () => {
-    // email은 제외해서 전송
+    // email과 nickname은 제외해서 전송
     const {email, nickname, ...payload} = profileData;
     try {
       await saveBusiness(payload);
@@ -73,7 +73,7 @@ export default function ProfileBusiness() {
   };
 
   const updateField = (field, value) => {
-    if (field === 'email') return; // 이메일은 변경 불가
+    if (field === 'email' || field === 'nickname') return; // 이메일과 닉네임은 변경 불가
     setProfileData((p) => ({...p, [field]: value}));
   };
 
@@ -111,7 +111,12 @@ export default function ProfileBusiness() {
 
         {/* 폼 영역 (드롭다운 없음) */}
         <div className="flex-1">
-          <ProfileForm profileData={profileData} isEditing={isEditing} onFieldChange={updateField} />
+          <ProfileForm
+            profileData={profileData}
+            isEditing={isEditing}
+            onFieldChange={updateField}
+            userType="BUSINESS"
+          />
         </div>
       </div>
     </div>

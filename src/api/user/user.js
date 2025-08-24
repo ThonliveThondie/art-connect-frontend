@@ -1,18 +1,21 @@
-import apiClient from '../utils/client.js';
+import apiClient, {postForm} from '../utils/client.js';
 
 const normalizeProfileFromServer = (data) => {
   if (!data || typeof data !== 'object') return data;
-  const nickName = data.nickName ?? data.nickname ?? '';
-  return {...data, nickName};
+  return {
+    ...data,
+    nickname: data.nickname ?? '',
+  };
 };
 
 const normalizeProfileToServer = (payload) => {
   if (!payload || typeof payload !== 'object') return payload;
   const {nickname, ...rest} = payload;
-  const nickName = payload.nickName ?? nickname;
-  return {...rest, ...(nickName !== undefined ? {nickName} : {})};
+  return {
+    ...rest,
+    nickname: nickname ?? '',
+  };
 };
-
 export const fetchMyProfile = async () => {
   const {data} = await apiClient.get('/api/mypage/me');
   return normalizeProfileFromServer(data);
@@ -36,12 +39,14 @@ export const uploadDesignerProfileImage = async (formData) => {
 };
 
 export const uploadProfileImage = async (file, userType) => {
-  const formData = new FormData();
-  formData.append('profileImage', file);
+  const fd = new FormData();
+  fd.append('profileImage', file);
+
   const endpoint =
     (userType || '').toUpperCase() === 'BUSINESS'
       ? '/api/mypage/business-owner/profile-image'
       : '/api/mypage/designer/profile-image';
-  const {data} = await apiClient.post(endpoint, formData);
+
+  const {data} = await postForm(endpoint, fd);
   return data;
 };
