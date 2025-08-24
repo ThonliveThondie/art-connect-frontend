@@ -46,8 +46,8 @@ export default function ProfileBusiness() {
   };
 
   const handleSave = async () => {
-    // email은 제외해서 전송
-    const {email, nickname, ...payload} = profileData;
+    // email과 nickName은 제외해서 전송
+    const {email, nickName, ...payload} = profileData;
     try {
       await saveBusiness(payload);
       setIsEditing(false);
@@ -73,7 +73,7 @@ export default function ProfileBusiness() {
   };
 
   const updateField = (field, value) => {
-    if (field === 'email') return; // 이메일은 변경 불가
+    if (field === 'email' || field === 'nickName') return; // 이메일과 닉네임은 변경 불가
     setProfileData((p) => ({...p, [field]: value}));
   };
 
@@ -111,7 +111,12 @@ export default function ProfileBusiness() {
 
         {/* 폼 영역 (드롭다운 없음) */}
         <div className="flex-1">
-          <ProfileForm profileData={profileData} isEditing={isEditing} onFieldChange={updateField} />
+          <ProfileForm
+            profileData={profileData}
+            isEditing={isEditing}
+            onFieldChange={updateField}
+            userType="BUSINESS"
+          />
         </div>
       </div>
     </div>

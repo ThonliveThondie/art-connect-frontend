@@ -59,7 +59,8 @@ export default function ProfileArtist() {
   };
 
   const handleSave = async () => {
-    const {email, nickname, ...rest} = profileData;
+    // email만 제외하고 nickName은 포함하여 전송
+    const {email, ...rest} = profileData;
 
     const payload = {
       ...rest,
@@ -123,7 +124,12 @@ export default function ProfileArtist() {
 
         {/* 폼 영역 */}
         <div className="flex-1">
-          <ProfileForm profileData={profileData} isEditing={isEditing} onFieldChange={updateField} />
+          <ProfileForm
+            profileData={profileData}
+            isEditing={isEditing}
+            onFieldChange={updateField}
+            userType="DESIGNER"
+          />
           <ExtraFields profileData={profileData} isEditing={isEditing} onFieldChange={updateField} />
         </div>
       </div>
