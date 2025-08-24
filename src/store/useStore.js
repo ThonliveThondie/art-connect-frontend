@@ -22,6 +22,5 @@ export const useStore = create((set) => ({
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userType');
-    set({userType: null, token: null});
   },
 }));

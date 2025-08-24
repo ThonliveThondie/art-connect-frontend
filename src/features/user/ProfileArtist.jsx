@@ -1,9 +1,10 @@
 import {useEffect, useState} from 'react';
-import {useProfile, useSaveDesigner, useUploadImage} from './hooks';
+import useProfile from '@/hooks/useProfile';
+import {useSaveDesigner, useUploadImage} from './hooks';
 import ProfileSide from './ProfileSide';
 import ProfileForm from './ProfileForm';
 import ExtraFields from './ExtraFields';
-import {CATEGORY_OPTIONS, STYLE_OPTIONS, toValueArray} from './ProfileOptions';
+import {CATEGORY_OPTIONS, STYLE_OPTIONS, toValueArray} from '@/api/utils/mapper';
 
 export default function ProfileArtist() {
   const {profile} = useProfile();
@@ -66,14 +67,24 @@ export default function ProfileArtist() {
       designStyles: toValueArray(rest.designStyles, STYLE_OPTIONS),
     };
 
-    await saveDesigner(payload);
-    setIsEditing(false);
+    try {
+      await saveDesigner(payload);
+      setIsEditing(false);
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message || '프로필 저장에 실패했습니다.';
+      alert(errorMessage);
+    }
   };
 
   const handleImageUpload = async (file) => {
-    const res = await upload(file);
-    if (res?.profileImageUrl) {
-      setProfileData((p) => ({...p, imageUrl: res.profileImageUrl}));
+    try {
+      const res = await upload(file);
+      if (res?.profileImageUrl) {
+        setProfileData((p) => ({...p, imageUrl: res.profileImageUrl}));
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message || '이미지 업로드에 실패했습니다.';
+      alert(errorMessage);
     }
   };
 

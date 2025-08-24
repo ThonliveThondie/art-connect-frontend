@@ -1,28 +1,26 @@
 import {useState} from 'react';
 import {HelpCircle} from 'lucide-react';
+import {useNavigate} from 'react-router-dom';
 import BackButton from '../../../components/common/buttons/BackButton';
 import Dropdown from '../../../components/common/form/Dropdown';
 import FileUpload from '../../../components/common/form/FileUpload';
+import {Loader2} from 'lucide-react';
+import {getCategoryOptions, mapLabelsToCategories} from '../../../api/utils/mapper';
+import {createPortfolio, uploadPortfolioImages} from '../../../api/portfolio/portfolio';
 import '../../../components/common/form/form.css';
 import './tooltip.css';
 
 export default function PortfolioAdd() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     categories: [],
     images: [],
     description: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const categoryOptions = [
-    '로고 디자인',
-    '브랜드 디자인',
-    '굿즈 디자인',
-    '포스터 · 전단지 디자인',
-    '배너 · 광고 디자인',
-    '패키지 디자인',
-    '명함 카드 · 인쇄물 디자인',
-  ];
+  const categoryOptions = getCategoryOptions();
 
   const handleCategoriesChange = (newValues) => {
     setFormData((prev) => ({
@@ -38,13 +36,70 @@ export default function PortfolioAdd() {
     }));
   };
 
+  const handleSubmit = async () => {
+    if (!formData.title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+    if (formData.categories.length === 0) {
+      alert('카테고리를 선택해주세요.');
+      return;
+    }
+    if (formData.images.length === 0) {
+      alert('작업물을 최소 1개 이상 첨부해주세요.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const portfolioData = {
+        title: formData.title,
+        designCategories: mapLabelsToCategories(formData.categories),
+        description: formData.description,
+      };
+
+      const createdPortfolio = await createPortfolio(portfolioData);
+
+      if (formData.images.length > 0) {
+        const portfolioId = createdPortfolio.portfolioId || createdPortfolio.id || createdPortfolio.data?.portfolioId;
+
+        if (portfolioId) {
+          await uploadPortfolioImages(portfolioId, formData.images);
+        } else {
+          console.warn('포트폴리오 ID를 찾을 수 없어 이미지 업로드를 건너뜁니다.');
+        }
+      }
+
+      console.log('포트폴리오 등록 성공.');
+      navigate('/portfolio');
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.message || '포트폴리오 등록에 실패했습니다.';
+      console.error('포트폴리오 등록 실패:', msg, err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="px-[140px] py-[26px] min-w-[1000px]">
       <BackButton />
       <div className="flex flex-col gap-[20px]">
         <div className="flex justify-between ">
           <h3 className="font-[600] text-[18px]">포트폴리오 작성하기</h3>
-          <button className="text-black/60 rounded-[4px] px-[8px] hover:text-black hover:bg-[#F1EEEC]">등록</button>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="text-black/60 rounded-[4px] px-[8px] hover:text-black hover:bg-[#F1EEEC] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 size={16} className="animate-spin" />
+                <span>등록</span>
+              </span>
+            ) : (
+              '등록'
+            )}
+          </button>
         </div>
 
         <div>

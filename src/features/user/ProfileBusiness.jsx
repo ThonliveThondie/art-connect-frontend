@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
-import {useProfile, useSaveBusiness, useUploadImage} from './hooks';
+import useProfile from '@/hooks/useProfile';
+import {useSaveBusiness, useUploadImage} from './hooks';
 import ProfileSide from './ProfileSide';
 import ProfileForm from './ProfileForm';
 
@@ -47,14 +48,27 @@ export default function ProfileBusiness() {
   const handleSave = async () => {
     // email은 제외해서 전송
     const {email, nickname, ...payload} = profileData;
-    await saveBusiness(payload);
-    setIsEditing(false);
+    try {
+      await saveBusiness(payload);
+      setIsEditing(false);
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message || '프로필 저장에 실패했습니다.';
+      alert(errorMessage);
+    }
   };
 
   const handleImageUpload = async (file) => {
-    const res = await upload(file);
-    if (res?.profileImageUrl) {
-      setProfileData((p) => ({...p, imageUrl: res.profileImageUrl}));
+    try {
+      // 업로드 응답이 { profileImageUrl } 또는 { imageUrl }로 올 수 있음
+      const res = await upload(file);
+      const url = res?.imageUrl ?? res?.profileImageUrl ?? '';
+      if (url) {
+        // ✅ 화면은 imageUrl만 본다
+        setProfileData((p) => ({...p, imageUrl: url}));
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message || '이미지 업로드에 실패했습니다.';
+      alert(errorMessage);
     }
   };
 

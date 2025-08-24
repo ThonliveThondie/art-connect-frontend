@@ -1,66 +1,117 @@
 import React from 'react';
-import BackButton from '@/components/common/buttons/BackButton';
-import {MoreHorizontal} from 'lucide-react';
+import {useParams, useNavigate} from 'react-router-dom';
+import {ChevronLeft} from 'lucide-react';
+import {MoreHorizontal, Loader2} from 'lucide-react';
 import MySwiper from '@/components/common/swiper/MySwiper';
+import {useStore} from '@/store/useStore';
+import {mapCategoriesToLabels} from '../../../api/utils/mapper';
+import {usePortfolioDetail, useDeletePortfolio} from '../hooks/usePortfolio';
 
-import img1 from '../../../assets/samples/image1.jpg';
-import img2 from '../../../assets/samples/image2.jpg';
+export default function PortfolioDetail() {
+  const {id: portfolioId} = useParams();
+  const navigate = useNavigate();
+  const userType = useStore((s) => s.userType);
 
-export default function PortfolioDetail({}) {
-  const images = [img1, img2, img1, img2];
+  const isArtist = userType === 'artist';
 
-  const data = {
-    title: 'Sage Petal 로고 & 명함 디자인',
-    designerName: 'suum',
-    categories: ['브랜딩', '그래픽'],
-    images: [],
-    description: `플라워샵 ‘Sage Petal’의 브랜드 아이덴티티를 확립하기 위해 진행한 프로젝트입니다. 은은한 뉴트럴 톤의 컬러 팔레트와 종이 질감을 살린 목업 스타일을 적용하여, 고급스럽고도 따뜻한 분위기를 연출했습니다.
+  const {portfolio: portfolioData, isLoading, error} = usePortfolioDetail(portfolioId);
+  const {remove: deletePortfolioAction, isLoading: isDeleting} = useDeletePortfolio();
 
-로고는 세이지 잎사귀의 라인 드로잉을 활용해 자연친화적인 이미지를 강조했으며, 음각 느낌의 타이포그래피 처리를 통해 섬세한 디테일을 더했습니다.
-
-명함 앞면에는 로고와 대표자 정보를 간결하게 배치하고, 뒷면에는 샵의 슬로건과 핵심 키워드를 넣어 브랜드 메시지를 강화했습니다.
-
-최종 산출물은 실제 인쇄 후에도 색상과 질감이 유지될 수 있도록 고해상도 파일과 인쇄 가이드라인을 함께 제공했습니다.`,
+  const handleEdit = () => {
+    navigate(`/portfolio/${portfolioId}/edit`);
   };
+
+  const handleDelete = async () => {
+    if (!confirm('정말로 이 포트폴리오를 삭제하시겠습니까?\n삭제된 포트폴리오는 복구할 수 없습니다.')) return;
+
+    try {
+      await deletePortfolioAction(portfolioId);
+      alert('포트폴리오가 삭제되었습니다.');
+      navigate('/portfolio');
+    } catch (error) {
+      console.error('포트폴리오 삭제 실패:', error);
+      const errorMessage =
+        error?.response?.data?.message || error?.message || '포트폴리오 삭제에 실패했습니다. 다시 시도해주세요.';
+      alert(errorMessage);
+    }
+  };
+
+  if (isLoading) return null;
+
+  if (error) {
+    return (
+      <div className="min-w-[1000px] py-[26px] px-[140px]">
+        <BackButton />
+        <div className="text-center py-20">
+          <p>포트폴리오를 불러오는데 실패했습니다.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!portfolioData) return null;
 
   return (
     <div className="min-w-[1000px] py-[26px] px-[140px]">
-      <BackButton />
+      <button
+        onClick={() => navigate('/portfolio')}
+        className="mb-[32px] flex items-center gap-[4px] text-[14px] text-black/50 hover:text-black"
+      >
+        <ChevronLeft size="14px" />
+        돌아가기
+      </button>
 
-      <div className="flex flex-col gap-[100px]">
-        <div>
-          <div className="mb-[32px] flex items-start justify-between">
-            <p className="text-[24px] font-bold">{data.title}</p>
-            <button
-              type="button"
-              aria-label="더보기"
-              className="px-[6px] py-[4px] text-black/60 rounded-[4px] hover:text-black hover:bg-[#F1EEEC]"
-            >
-              <MoreHorizontal size={20} />
-            </button>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-[100px]">
+      <div className=" flex flex-col gap-[100px]">
+        {/* 헤더 */}
+        <div className="flex justify-between items-start mb-[40px]">
+          <div className="min-w-0">
+            <h1 className="text-[32px] font-[700] mb-[20px]">{portfolioData.title}</h1>
+            <div className="flex flex-col gap-[12px]">
+              {/* 디자이너 */}
               <div className="flex items-center gap-[20px]">
-                <span className="text-black/50">디자이너</span>
-                <span>{data.designerName}</span>
+                <span className="text-black/50 flex-shrink-0">디자이너</span>
+                <span className="block whitespace-nowrap overflow-x-auto">{portfolioData.designerNickname}</span>
               </div>
+              {/* 카테고리 */}
               <div className="flex items-center gap-[20px]">
-                <span className="text-black/50">카테고리</span>
-                <span>{data.categories.join(' · ')}</span>
+                <span className="text-black/50 flex-shrink-0">카테고리</span>
+                <span className="block whitespace-nowrap overflow-x-auto">
+                  {mapCategoriesToLabels(portfolioData.designCategories).join(' · ')}
+                </span>
               </div>
             </div>
           </div>
+
+          {/* 디자이너인 경우에만 수정/삭제 버튼 표시 */}
+          {isArtist && (
+            <div className="flex items-center gap-[10px]">
+              <button onClick={handleEdit} className="text-[#4B83E3]">
+                수정
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="flex items-center gap-[6px] text-[#E53E3E] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeleting && <Loader2 size={16} className="animate-spin" />}
+                <span>삭제</span>
+              </button>
+              <button className="p-[8px] text-black/60 rounded-[6px] hover:text-black hover:bg-[#F1EEEC] transition-colors duration-200">
+                <MoreHorizontal size={16} />
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-center w-[920px] h-[645px] m-auto">
-          <MySwiper images={images} />
+        {/* 이미지 슬라이더 */}
+        <div className="mb-[40px]">
+          <MySwiper images={portfolioData.portfolioImages || []} />
         </div>
 
+        {/* 상세 설명 */}
         <div>
           <p className="font-semibold text-black/50 mb-[12px]">상세 설명</p>
-          <p className="whitespace-pre-wrap leading-[24px]">{data.description}</p>
+          <p className="whitespace-pre-wrap leading-[24px]">{portfolioData.description}</p>
         </div>
       </div>
     </div>
