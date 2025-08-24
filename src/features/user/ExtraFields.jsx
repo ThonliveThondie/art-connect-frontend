@@ -1,5 +1,5 @@
 import Dropdown from '@/components/common/form/Dropdown';
-import {CATEGORY_OPTIONS, STYLE_OPTIONS} from '@/features/user/ProfileOptions';
+import {CATEGORY_OPTIONS, STYLE_OPTIONS} from '@/api/utils/mapper';
 import {useMemo} from 'react';
 
 export default function ExtraFields({profileData, isEditing, onFieldChange}) {

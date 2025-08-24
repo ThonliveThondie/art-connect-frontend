@@ -1,23 +1,4 @@
-import axios from 'axios';
-import {useStore} from '@/store/useStore';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-export const storeApi = axios.create({
-  baseURL: BASE_URL,
-  timeout: 10000,
-});
-
-storeApi.interceptors.request.use((config) => {
-  try {
-    const {token} = useStore.getState();
-    if (token) {
-      config.headers = config.headers || {};
-      config.headers.Authorization = `Bearer ${token}`; // Bearer ${token}
-    }
-  } catch {}
-  return config;
-});
+import apiClient from '../utils/client.js';
 
 const OPERATING_HOUR_OPTIONS = [
   {label: '평일', value: 'WEEKDAYS'},
@@ -27,6 +8,7 @@ const OPERATING_HOUR_OPTIONS = [
   {label: '저녁', value: 'EVENING'},
   {label: '심야', value: 'LATE_NIGHT'},
 ];
+
 const labelToValue = Object.fromEntries(OPERATING_HOUR_OPTIONS.map((o) => [o.label, o.value]));
 const toValueArray = (arr) => (Array.isArray(arr) ? arr.map((v) => labelToValue[v] ?? v) : []);
 
@@ -43,7 +25,7 @@ export const normalizeImages = (arr) => {
 };
 
 export const fetchMyStore = async () => {
-  const {data} = await storeApi.get('/api/stores/my');
+  const {data} = await apiClient.get('/api/stores/my');
   return {
     ...data,
     operatingHours: toValueArray(data?.operatingHours ?? []),
@@ -56,19 +38,21 @@ export const saveStore = async (payload) => {
     ...payload,
     operatingHours: toValueArray(payload?.operatingHours ?? []),
   };
-  const {data} = await storeApi.post('/api/stores/save/name', body);
+  const {data} = await apiClient.post('/api/stores/save/name', body);
   return data;
 };
 
 export const uploadStoreImage = async (file) => {
   const fd = new FormData();
   fd.append('images', file);
-  const {data} = await storeApi.post('/api/stores/images', fd);
+  const {data} = await apiClient.post('/api/stores/images', fd, {
+    headers: {'Content-Type': 'multipart/form-data'},
+  });
   const norm = normalizeImages([data])[0] || data;
   return norm;
 };
 
 export const deleteStoreImage = async (id) => {
-  const {data} = await storeApi.delete(`/api/stores/images/${id}`);
+  const {data} = await apiClient.delete(`/api/stores/images/${id}`);
   return data;
 };

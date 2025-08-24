@@ -139,14 +139,16 @@ function Signup() {
       await signupApi({
         email,
         password,
-        userType: toBackendUserType(userType), // 바로 매핑
+        userType: toBackendUserType(userType),
       });
 
-      setUserTypeGlobal(userType); // 프론트에서 쓸 타입만 저장
+      setUserTypeGlobal(userType);
 
       navigate('/login', {replace: true, state: {email}});
+      alert('회원가입이 완료되었습니다.');
     } catch (err) {
-      alert(err?.message || '회원가입 실패');
+      const message = err?.response?.data?.message || '회원가입 실패';
+      alert(message);
     }
   };
 
