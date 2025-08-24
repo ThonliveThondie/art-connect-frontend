@@ -31,6 +31,9 @@ export default function Portfolio() {
   const {profile} = useProfile();
   const {portfolios} = useMyPortfolios();
 
+  // 디자이너별 포트폴리오 필터링
+  const filteredPortfolios = portfolios || [];
+
   const handleAddPortfolio = () => {
     navigate('/portfolio/add');
   };
@@ -39,7 +42,7 @@ export default function Portfolio() {
     navigate(`/portfolio/${portfolioId}`);
   };
 
-  const transformedPortfolios = (portfolios || []).map((p) => ({
+  const transformedPortfolios = filteredPortfolios.map((p) => ({
     id: p.portfolioId,
     title: p.title,
     category: mapCategoriesToLabels(p.designCategories).join(' · '),
@@ -107,6 +110,18 @@ export default function Portfolio() {
           </div>
         ))}
       </div>
+      {isArtist && transformedPortfolios.length === 0 && (
+        <div className="text-center py-12">
+          <div
+            onClick={handleAddPortfolio}
+            className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center"
+          >
+            <Plus size={32} className="text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">첫 번째 포트폴리오를 추가해보세요</h3>
+          <p className="text-gray-500 mb-4">당신의 작품을 세상에 보여주세요</p>
+        </div>
+      )}
     </div>
   );
 }
