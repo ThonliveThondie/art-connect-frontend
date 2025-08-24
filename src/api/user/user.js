@@ -2,17 +2,20 @@ import apiClient from '../utils/client.js';
 
 const normalizeProfileFromServer = (data) => {
   if (!data || typeof data !== 'object') return data;
-  const nickName = data.nickName ?? data.nickname ?? '';
-  return {...data, nickName};
+  return {
+    ...data,
+    nickname: data.nickname ?? '',
+  };
 };
 
 const normalizeProfileToServer = (payload) => {
   if (!payload || typeof payload !== 'object') return payload;
   const {nickname, ...rest} = payload;
-  const nickName = payload.nickName ?? nickname;
-  return {...rest, ...(nickName !== undefined ? {nickName} : {})};
+  return {
+    ...rest,
+    nickname: nickname ?? '',
+  };
 };
-
 export const fetchMyProfile = async () => {
   const {data} = await apiClient.get('/api/mypage/me');
   return normalizeProfileFromServer(data);

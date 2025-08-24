@@ -13,7 +13,7 @@ export default function ProfileBusiness() {
   const [profileData, setProfileData] = useState({
     imageUrl: '',
     email: '',
-    nickName: '',
+    nickname: '',
     phoneNumber: '',
   });
 
@@ -24,7 +24,7 @@ export default function ProfileBusiness() {
         ...prev,
         imageUrl: profile.imageUrl ?? '',
         email: profile.email ?? '', // 표시용(읽기 전용)
-        nickName: profile.nickName ?? profile.nickname ?? '',
+        nickname: profile.nickName ?? profile.nickname ?? '',
         phoneNumber: profile.phoneNumber ?? '',
       }));
     }
@@ -39,15 +39,15 @@ export default function ProfileBusiness() {
         ...prev,
         imageUrl: profile.imageUrl ?? '',
         email: profile.email ?? '',
-        nickName: profile.nickName ?? profile.nickname ?? '',
+        nickname: profile.nickName ?? profile.nickname ?? '',
         phoneNumber: profile.phoneNumber ?? '',
       }));
     }
   };
 
   const handleSave = async () => {
-    // email과 nickName은 제외해서 전송
-    const {email, nickName, ...payload} = profileData;
+    // email과 nickname은 제외해서 전송
+    const {email, nickname, ...payload} = profileData;
     try {
       await saveBusiness(payload);
       setIsEditing(false);
@@ -73,7 +73,7 @@ export default function ProfileBusiness() {
   };
 
   const updateField = (field, value) => {
-    if (field === 'email' || field === 'nickName') return; // 이메일과 닉네임은 변경 불가
+    if (field === 'email' || field === 'nickname') return; // 이메일과 닉네임은 변경 불가
     setProfileData((p) => ({...p, [field]: value}));
   };
 

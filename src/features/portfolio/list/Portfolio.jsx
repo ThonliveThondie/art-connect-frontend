@@ -64,7 +64,9 @@ export default function Portfolio() {
           <img src={profile?.imageUrl || DefaultProfile} alt="프로필" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
-          <h1 className="text-[24px] font-[700] mb-[18px]">{profile?.nickName || '-'}</h1>
+          <h1 className="text-[24px] font-[700] mb-[18px]">
+            {profile?.nickname ?? transformedPortfolios[0]?.designerName ?? '-'}
+          </h1>
           <div className="space-y-[10px] text-sm text-gray-600">
             <div className="flex items-center">
               <span className="text-gray-400 w-[102px]">학력・전공</span>

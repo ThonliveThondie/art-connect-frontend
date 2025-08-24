@@ -15,8 +15,8 @@ export default function ProfileForm({profileData, isEditing, onFieldChange, user
         <label className="label-title">닉네임</label>
         <input
           type="text"
-          value={profileData.nickName || ''}
-          onChange={(e) => onFieldChange('nickName', e.target.value)}
+          value={profileData.nickname || ''}
+          onChange={(e) => onFieldChange('nickname', e.target.value)}
           disabled={isNicknameDisabled}
           className={`form-input ${isNicknameDisabled ? 'bg-[#F8F7F6]' : ''}`}
           placeholder="닉네임을 입력하세요"
