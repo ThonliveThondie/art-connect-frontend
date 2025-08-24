@@ -1,19 +1,53 @@
 import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {ClipboardList} from 'lucide-react';
 import StatusBadge from '@/components/common/badge/StatusBadge';
 import WorkRequestViewModal from '@/components/modal/WorkRequestView';
 import ConfirmModal from '@/components/modal/ConfirmModal';
+import {useStore} from '@/store/useStore';
+import {completeWorkRequest} from '@/api/work-request/workRequest';
 
 export default function Header({
-  status = 'pending',
+  status = 'PENDING',
   title,
   company,
   designer,
-  contractDate,
+  endDate,
   showCompleteButton = false,
+  workRequestId, // 작업의뢰서 ID 추가
+  onProjectComplete, // 프로젝트 완료 콜백 추가
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isWorkRequestOpen, setIsWorkRequestOpen] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false); // 완료 처리 중 상태
+  const {userType} = useStore(); // 사용자 유형 가져오기
+  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 함수
+
+  // 프로젝트 완료 처리
+  const handleProjectComplete = async () => {
+    if (!workRequestId) {
+      alert('작업 요청 ID가 없습니다.');
+      return;
+    }
+
+    setIsCompleting(true);
+    try {
+      await completeWorkRequest(workRequestId);
+      setIsConfirmOpen(false);
+      
+      // 부모 컴포넌트에 완료 알림
+      if (onProjectComplete) {
+        onProjectComplete();
+      }
+      
+      // 진행 중인 프로젝트 목록 화면으로 이동
+      navigate('/projects/ongoing');
+    } catch (error) {
+      alert('프로젝트 완료에 실패했습니다: ' + error.message);
+    } finally {
+      setIsCompleting(false);
+    }
+  };
 
   return (
     <div className="flex justify-between items-end">
@@ -33,8 +67,8 @@ export default function Header({
             <span>{designer}</span>
           </div>
           <div className="flex items-center">
-            <span className="text-gray-400 w-[80px]">계약일</span>
-            <span>{contractDate}</span>
+            <span className="text-gray-400 w-[80px]">납기일</span>
+            <span>{endDate}</span>
           </div>
         </div>
       </div>
@@ -63,11 +97,16 @@ export default function Header({
       <ConfirmModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={() => {
-          setIsConfirmOpen(false);
-        }}
+        onConfirm={handleProjectComplete}
+        isProcessing={isCompleting}
+        confirmText={isCompleting ? "완료 중..." : "완료"}
       />
-      <WorkRequestViewModal isOpen={isWorkRequestOpen} onClose={() => setIsWorkRequestOpen(false)} workRequestId={1} />
+      <WorkRequestViewModal 
+        isOpen={isWorkRequestOpen} 
+        onClose={() => setIsWorkRequestOpen(false)} 
+        workRequestId={workRequestId}
+        userType={userType}
+      />
     </div>
   );
 }

@@ -51,10 +51,19 @@ export default function HomeBusiness() {
     }
   };
 
-  // Enter 키 처리
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && inputValue.trim() && !isLoading) {
-      handleSubmit();
+  // 키보드 이벤트 처리
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        // Shift + Enter: 개행만 허용, 전송하지 않음
+        return;
+      } else {
+        // Enter: 전송 (개행 방지)
+        e.preventDefault();
+        if (inputValue.trim() && !isLoading) {
+          handleSubmit();
+        }
+      }
     }
   };
 
@@ -81,7 +90,7 @@ export default function HomeBusiness() {
               e.target.style.height = '24px'; // 높이 초기화
               e.target.style.height = e.target.scrollHeight + 'px'; // 내용에 맞게 높이 조절
             }}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             className="w-full text-[16px] outline-none resize-none overflow-hidden"
             placeholder="예: 따뜻한 감성의 빈티지 카페, 20대 여성 타깃, 아늑하고 편안한 분위기를 원해요."
           />

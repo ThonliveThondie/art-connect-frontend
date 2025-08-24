@@ -16,7 +16,9 @@ export default function DesignerCard({designerId = 'designer123', designer = nul
   const nickname = designer?.nickname || '디자이너';
   const specialty = designer?.specialty || '전문 분야 정보 없음';
   const profileImageUrl = designer?.profileImageUrl || DefaultProfile;
-  const portfolioImages = designer?.portfolioImageUrl || [];
+  
+  // portfolioImageUrl 배열에서 imageUrl 추출
+  const portfolioImages = designer?.portfolioImageUrl?.map(item => item.imageUrl) || [];
 
   const handlePortfolioView = () => {
     navigate('/portfolio', {

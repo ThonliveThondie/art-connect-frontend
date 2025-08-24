@@ -1,13 +1,13 @@
 import React from 'react';
 
-export default function StatusBadge({status = 'pending', className = ''}) {
+export default function StatusBadge({status = 'PENDING', className = ''}) {
   const STATUS = {
-    pending: {dot: 'bg-[#F59E0B]', text: '시안 제출 대기 중'},
-    reviewing: {dot: 'bg-[#3B82F6]', text: '피드백 대기 중'},
-    done: {dot: 'bg-[#10B981]', text: '피드백 전달 완료'},
+    PENDING: {dot: 'bg-[#F59E0B]', text: '시안 제출 대기 중'},
+    FEEDBACK_WAITING: {dot: 'bg-[#3B82F6]', text: '피드백 대기 중'},
+    ACCEPTED: {dot: 'bg-[#10B981]', text: '피드백 전달 완료'},
   };
 
-  const current = STATUS[status] ?? STATUS.pending;
+  const current = STATUS[status] ?? STATUS.PENDING;
 
   return (
     <span

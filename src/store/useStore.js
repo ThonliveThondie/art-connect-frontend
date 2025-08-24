@@ -2,7 +2,6 @@ import {create} from 'zustand';
 
 export const useStore = create((set) => ({
   userType: localStorage.getItem('userType') ?? null,
-  userId: localStorage.getItem('userId') ?? null,
   token: localStorage.getItem('token') ?? null,
   setUserType: (type) => {
     if (type) {
@@ -11,14 +10,6 @@ export const useStore = create((set) => ({
       localStorage.removeItem('userType');
     }
     set({userType: type});
-  },
-  setUserId: (userId) => {
-    if (userId) {
-      localStorage.setItem('userId', userId);
-    } else {
-      localStorage.removeItem('userId');
-    }
-    set({userId});
   },
   setToken: (token) => {
     if (token) {
@@ -31,7 +22,5 @@ export const useStore = create((set) => ({
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userType');
-    localStorage.removeItem('userId');
-    set({userType: null, userId: null, token: null});
   },
 }));
