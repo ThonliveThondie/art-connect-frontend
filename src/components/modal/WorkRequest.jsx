@@ -1,12 +1,17 @@
 import {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {Calendar28} from './Calendar';
 import Dropdown from '../common/form/Dropdown';
 import FileUpload from '../common/form/FileUpload';
 import {getStoreName} from '../../api/store/store';
 import {sendWorkRequest} from '../../api/work-request/workRequest';
+import {useStore} from '../../store/useStore';
 import '../common/form/form.css';
 
 export default function WorkRequestCreateModal({isOpen, onClose, designerId, onSuccess}) {
+  const userType = useStore((state) => state.userType);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     title: '',
     companyName: '',
@@ -25,6 +30,15 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingStoreName, setIsLoadingStoreName] = useState(false);
 
+  // 비즈니스 사용자만 작업의뢰서 작성 가능하도록 체크
+  useEffect(() => {
+    if (isOpen && userType !== 'business') {
+      alert('비즈니스 사용자만 작업의뢰서를 작성할 수 있습니다.');
+      onClose();
+      return;
+    }
+  }, [isOpen, userType, onClose]);
+
   // 매장명 자동 조회 함수
   const fetchStoreName = async () => {
     setIsLoadingStoreName(true);
@@ -33,9 +47,9 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
       // API 응답에서 매장명 추출 (응답 구조에 따라 조정 필요)
       const storeName = response?.storeName || response?.name || response;
       if (storeName) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          companyName: storeName
+          companyName: storeName,
         }));
       }
     } catch (error) {
@@ -48,10 +62,10 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
 
   // 모달이 열릴 때 매장명 자동 조회
   useEffect(() => {
-    if (isOpen && !formData.companyName) {
+    if (isOpen && !formData.companyName && userType === 'business') {
       fetchStoreName();
     }
-  }, [isOpen]);
+  }, [isOpen, userType]);
 
   const designerTypeOptions = [
     '로고 디자인',
@@ -81,17 +95,17 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
   // 폼 유효성 검사
   const validateForm = () => {
     const requiredFields = [
-      { field: 'title', name: '프로젝트명' },
-      { field: 'companyName', name: '업체명' },
-      { field: 'deadline', name: '희망 납기일' },
-      { field: 'money', name: '제안 금액' },
-      { field: 'service', name: '제품/서비스' },
-      { field: 'targetAudience', name: '주요 고객' },
-      { field: 'brandIntro', name: '현재 상황' },
-      { field: 'goal', name: '목표' }
+      {field: 'title', name: '프로젝트명'},
+      {field: 'companyName', name: '업체명'},
+      {field: 'deadline', name: '희망 납기일'},
+      {field: 'money', name: '제안 금액'},
+      {field: 'service', name: '제품/서비스'},
+      {field: 'targetAudience', name: '주요 고객'},
+      {field: 'brandIntro', name: '현재 상황'},
+      {field: 'goal', name: '목표'},
     ];
 
-    for (const { field, name } of requiredFields) {
+    for (const {field, name} of requiredFields) {
       if (!formData[field] || formData[field].trim() === '') {
         alert(`${name}을(를) 입력해주세요.`);
         return false;
@@ -122,9 +136,9 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
     try {
       // 작업의뢰서 전송 API 호출
       const result = await sendWorkRequest(designerId, formData);
-      
+
       console.log('작업의뢰서 전송 성공:', result);
-      
+
       // 성공 콜백 호출
       if (onSuccess) {
         onSuccess({
@@ -135,14 +149,15 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
           status: 'PENDING',
         });
       }
-      
+
       // 모달 닫기
       if (onClose) {
         onClose();
       }
-      
+
+      // 성공 메시지 표시 후 진행 중인 프로젝트 페이지로 이동
       alert('작업 의뢰서가 성공적으로 전송되었습니다!');
-      
+      navigate('/projects/ongoing');
     } catch (error) {
       console.error('작업의뢰서 전송 실패:', error);
       alert(error.message || '의뢰서 전송 중 오류가 발생했습니다.');
@@ -188,15 +203,13 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
               <div>
                 <label className="form-label">
                   업체명
-                  {isLoadingStoreName && (
-                    <span className="ml-2 text-sm text-gray-500">(매장명 조회 중...)</span>
-                  )}
+                  {isLoadingStoreName && <span className="ml-2 text-sm text-gray-500">(매장명 조회 중...)</span>}
                 </label>
                 <input
                   type="text"
                   className="form-input"
                   value={formData.companyName}
-                  placeholder={isLoadingStoreName ? "매장명을 조회하고 있습니다..." : "예) OO커피 로스터스"}
+                  placeholder={isLoadingStoreName ? '매장명을 조회하고 있습니다...' : '예) OO커피 로스터스'}
                   disabled={isLoadingStoreName}
                   onChange={(e) => setFormData({...formData, companyName: e.target.value})}
                 />

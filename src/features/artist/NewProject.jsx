@@ -14,20 +14,21 @@ export default function NewProject() {
     setError(null);
     try {
       const workRequests = await getWorkRequestList();
-      
+
       // API 응답 데이터를 컴포넌트에서 사용할 형식으로 변환
-      const transformedProjects = workRequests.map(request => ({
+      const transformedProjects = workRequests.map((request) => ({
         id: request.id,
         title: request.projectTitle || '프로젝트명 없음',
         location: request.storeName || '매장명 없음',
         price: request.budget || 0,
-        status: '대기'
+        status: '대기',
       }));
-      
+
       setProjects(transformedProjects);
     } catch (error) {
       console.error('작업의뢰서 목록 조회 실패:', error);
-      setError(error.message);
+      const errorMessage = error?.response?.data?.message || error?.message || '작업의뢰서 목록 조회에 실패했습니다.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -47,14 +48,15 @@ export default function NewProject() {
     try {
       // 작업의뢰서 수락 API 호출
       await acceptWorkRequest(id);
-      
+
       // 성공 시 목록에서 제거 (수락된 프로젝트는 진행 중 프로젝트로 이동)
       setProjects((prev) => prev.filter((p) => p.id !== id));
-      
+
       alert('작업 의뢰가 성공적으로 수락되었습니다.');
     } catch (error) {
       console.error('작업의뢰서 수락 실패:', error);
-      alert(error.message || '작업 의뢰 수락 중 오류가 발생했습니다.');
+      const errorMessage = error?.response?.data?.message || error?.message || '작업 의뢰 수락 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   };
 
@@ -67,14 +69,15 @@ export default function NewProject() {
     try {
       // 작업의뢰서 거절 API 호출
       await rejectWorkRequest(id);
-      
+
       // 성공 시 목록에서 제거
       setProjects((prev) => prev.filter((p) => p.id !== id));
-      
+
       alert('작업 의뢰가 성공적으로 거절되었습니다.');
     } catch (error) {
       console.error('작업의뢰서 거절 실패:', error);
-      alert(error.message || '작업 의뢰 거절 중 오류가 발생했습니다.');
+      const errorMessage = error?.response?.data?.message || error?.message || '작업 의뢰 거절 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   };
 
@@ -97,10 +100,7 @@ export default function NewProject() {
         <p className="text-[18px] font-[600] w-40">새 프로젝트 제안</p>
         <div className="py-[20px] flex flex-col items-center justify-center gap-4">
           <div className="text-red-500">오류가 발생했습니다: {error}</div>
-          <button 
-            onClick={fetchWorkRequests}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
+          <button onClick={fetchWorkRequests} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
             다시 시도
           </button>
         </div>
