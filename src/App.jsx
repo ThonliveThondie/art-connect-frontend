@@ -16,6 +16,7 @@ import Portfolio from './features/portfolio/list/Portfolio.jsx';
 import OngoingProjects from './features/project/list/ongoing/OngoingProjects';
 import CompletedProjects from './features/project/list/completed/CompletedProjects.jsx';
 import PortfolioAdd from './features/portfolio/add/PortfolioAdd.jsx';
+import PortfolioEdit from './features/portfolio/edit/PortfolioEdit.jsx';
 import ProjectDetail from './features/project/detail/ProjectDetail';
 import Login from './features/auth/Login.jsx';
 import Signup from './features/auth/Signup.jsx';
@@ -54,6 +55,7 @@ const App = () => {
           <Route path="/profile/business" element={<ProfileBusiness />} />
 
           <Route path="/portfolio/add" element={<PortfolioAdd />} />
+          <Route path="/portfolio/:id/edit" element={<PortfolioEdit />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio" element={<Portfolio />} />
 

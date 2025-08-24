@@ -14,15 +14,15 @@ export default function MySwiper({images = []}) {
     <div className="my-swiper aspect-[4/3] w-full">
       <Swiper
         modules={[Navigation, Pagination]}
-        navigation={true}
+        navigation
         pagination={{clickable: true}}
-        loop="true"
+        loop={images.length > 1}
         className="w-full h-full"
       >
         {images.map((src, index) => (
           <SwiperSlide key={index}>
             <img
-              src={src}
+              src={typeof src === 'string' ? src : src?.url || src?.imageUrl || ''}
               alt={`Slide ${index + 1}`}
               className="w-full h-full object-cover"
               loading={index === 0 ? 'eager' : 'lazy'}
