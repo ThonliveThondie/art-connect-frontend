@@ -1,4 +1,4 @@
-import apiClient from '../utils/client.js';
+import apiClient, {postForm} from '../utils/client.js';
 
 const normalizeProfileFromServer = (data) => {
   if (!data || typeof data !== 'object') return data;
@@ -39,12 +39,14 @@ export const uploadDesignerProfileImage = async (formData) => {
 };
 
 export const uploadProfileImage = async (file, userType) => {
-  const formData = new FormData();
-  formData.append('profileImage', file);
+  const fd = new FormData();
+  fd.append('profileImage', file);
+
   const endpoint =
     (userType || '').toUpperCase() === 'BUSINESS'
       ? '/api/mypage/business-owner/profile-image'
       : '/api/mypage/designer/profile-image';
-  const {data} = await apiClient.post(endpoint, formData);
+
+  const {data} = await postForm(endpoint, fd);
   return data;
 };
