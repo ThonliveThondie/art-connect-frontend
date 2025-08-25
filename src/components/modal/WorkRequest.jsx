@@ -5,11 +5,12 @@ import Dropdown from '../common/form/Dropdown';
 import FileUpload from '../common/form/FileUpload';
 import {getStoreName} from '../../api/store/store';
 import {sendWorkRequest} from '../../api/work-request/workRequest';
+import {generateWorkRequestApi} from '../../api/ai/recommend';
 import {useStore} from '../../store/useStore';
 import '../common/form/form.css';
 import {BotMessageSquare} from 'lucide-react';
 
-export default function WorkRequestCreateModal({isOpen, onClose, designerId, onSuccess}) {
+export default function WorkRequestCreateModal({isOpen, onClose, designerId, onSuccess, sessionId}) {
   const userType = useStore((state) => state.userType);
   const navigate = useNavigate();
 
@@ -30,6 +31,7 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingStoreName, setIsLoadingStoreName] = useState(false);
+  const [isGeneratingWorkRequest, setIsGeneratingWorkRequest] = useState(false);
 
   // 비즈니스 사용자만 작업의뢰서 작성 가능하도록 체크
   useEffect(() => {
@@ -91,6 +93,73 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
       ...prev,
       referenceFiles: newFiles,
     }));
+  };
+
+  // AI 작업의뢰서 생성 함수
+  const handleClickChatbot = async () => {
+    if (!sessionId) {
+      alert('AI 추천 결과에서만 사용할 수 있는 기능입니다.');
+      return;
+    }
+
+    // 사용자 확인 요청
+    const isConfirmed = window.confirm(
+      'AI가 작업의뢰서를 자동으로 생성하시겠습니까?\n\n현재 입력된 내용은 AI가 생성한 내용으로 덮어씌워집니다.'
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    setIsGeneratingWorkRequest(true);
+    try {
+      const aiWorkRequestData = await generateWorkRequestApi(sessionId);
+      
+      if (aiWorkRequestData) {
+        // designCategories를 한국어로 매핑
+        const categoryMap = {
+          'LOGO': '로고 디자인',
+          'BRAND': '브랜드 디자인',
+          'GOODS': '굿즈 디자인',
+          'POSTER_FLYER': '포스터 · 전단지 디자인',
+          'BANNER_AD': '배너 · 광고 디자인',
+          'PACKAGE': '패키지 디자인',
+          'CARD': '명함/카드/인쇄물 디자인',
+        };
+
+        const designerTypes = aiWorkRequestData.designCategories?.map(
+          category => categoryMap[category] || category
+        ) || [];
+
+        // 예산을 한국어 형식으로 변환 (예: 3500000 -> "3,500,000원")
+        const formattedBudget = aiWorkRequestData.budget 
+          ? `${aiWorkRequestData.budget.toLocaleString()}원`
+          : '';
+
+        // 폼 데이터 자동 채우기
+        setFormData(prev => ({
+          ...prev,
+          title: aiWorkRequestData.projectTitle || '',
+          deadline: aiWorkRequestData.endDate || '',
+          money: formattedBudget,
+          service: aiWorkRequestData.productService || '',
+          targetAudience: aiWorkRequestData.targetCustomers || '',
+          brandIntro: aiWorkRequestData.nowStatus || '',
+          goal: aiWorkRequestData.goal || '',
+          designerTypes: designerTypes,
+          referenceDescription: aiWorkRequestData.additionalDescription || '',
+          additionalRequirements: aiWorkRequestData.additionalRequirement || '',
+        }));
+
+        console.log('AI 작업의뢰서 생성 성공:', aiWorkRequestData);
+        alert('AI 작업의뢰서가 성공적으로 생성되었습니다!');
+      }
+    } catch (error) {
+      console.error('AI 작업의뢰서 생성 실패:', error);
+      alert('AI 작업의뢰서 생성 중 오류가 발생했습니다.');
+    } finally {
+      setIsGeneratingWorkRequest(false);
+    }
   };
 
   // 폼 유효성 검사
@@ -174,16 +243,31 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
       <div className="relative flex flex-col bg-white rounded-[8px] w-[800px] h-[600px] overflow-hidden flex flex-col px-[32px] py-[24px]">
         {/* 헤더 */}
         <div className="flex justify-between items-center ">
-          <div className="flex">
+          <div className="flex flex-row items-center gap-[8px]">
             <h2 className="text-[16px] font-[600]">작업 의뢰서 작성</h2>
-            <button>
+            <button 
+              onClick={handleClickChatbot}
+              disabled={isGeneratingWorkRequest || !sessionId}
+              className="relative group inline-flex items-center"
+              title={!sessionId ? "AI 추천 결과에서만 사용 가능" : "AI로 작업의뢰서 자동 생성"}
+            >
               <BotMessageSquare
                 size={20}
-                className=" mx-[10px]
-        text-gray-500 hover:text-black 
-        transform -scale-x-100"
-              />
+                className={`transform -scale-x-100 transition-colors ${
+                  isGeneratingWorkRequest 
+                    ? 'text-blue-500 animate-pulse' 
+                    : !sessionId 
+                      ? 'text-gray-300 cursor-not-allowed'
+                      : 'text-gray-500 hover:text-black'
+                }`}
+               />
+             
             </button>
+            {isGeneratingWorkRequest && (
+                <div className="bg-black text-white px-2 py-1 rounded text-xs whitespace-nowrap shrink-0">
+                  AI 작업의뢰서 생성 중...
+                </div>
+              )}
           </div>
           <div className="flex justify-end gap-[4px]">
             <button onClick={onClose} className="btn" disabled={isSubmitting}>

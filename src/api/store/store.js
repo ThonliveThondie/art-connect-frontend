@@ -60,7 +60,7 @@ export const deleteStoreImage = async (id) => {
 // 매장명 조회 API
 export const getStoreName = async () => {
   try {
-    const {data} = await storeApi.get('/api/stores/store-name');
+    const {data} = await apiClient.get('/api/stores/store-name');
     return data;
   } catch (error) {
     console.error('매장명 조회 중 오류 발생:', error);

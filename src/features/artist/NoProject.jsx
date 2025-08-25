@@ -17,7 +17,7 @@ export default function NoProject() {
         </p>
         <button
           type="button"
-          onClick={() => navigate('/portfolio-artist')}
+          onClick={() => navigate('/portfolio')}
           className="px-[20px] py-[16px] w-[240px] h-[60px] mt-[40px] rounded-[8px] bg-[#9E9692] text-[20px] text-white"
         >
           포트폴리오 작성하기

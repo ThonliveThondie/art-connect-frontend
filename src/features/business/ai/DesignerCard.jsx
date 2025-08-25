@@ -14,6 +14,7 @@ export default function DesignerCard({
   designerIndex,
   onRefresh,
   isRefreshing = false,
+  sessionId,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -129,8 +130,13 @@ export default function DesignerCard({
         </div>
       </div>
 
-      {/* 모달: 기존 기능 유지 */}
-      <WorkRequestModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} designerId={designerId} />
+      {/* 모달: sessionId 추가 전달 */}
+      <WorkRequestModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        designerId={designerId}
+        sessionId={sessionId}
+      />
     </>
   );
 }

@@ -165,6 +165,7 @@ export default function AIResult() {
                     designerIndex={index}
                     onRefresh={() => handleRefreshSingleDesigner(index)}
                     isRefreshing={refreshingIndex === index}
+                    sessionId={sessionId}
                   />
                 ))
               ) : (
