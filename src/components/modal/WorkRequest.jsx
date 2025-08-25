@@ -7,6 +7,7 @@ import {getStoreName} from '../../api/store/store';
 import {sendWorkRequest} from '../../api/work-request/workRequest';
 import {useStore} from '../../store/useStore';
 import '../common/form/form.css';
+import {BotMessageSquare} from 'lucide-react';
 
 export default function WorkRequestCreateModal({isOpen, onClose, designerId, onSuccess}) {
   const userType = useStore((state) => state.userType);
@@ -170,10 +171,20 @@ export default function WorkRequestCreateModal({isOpen, onClose, designerId, onS
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4">
-      <div className="flex flex-col bg-white rounded-[8px] w-[800px] h-[600px] overflow-hidden flex flex-col px-[32px] py-[24px]">
+      <div className="relative flex flex-col bg-white rounded-[8px] w-[800px] h-[600px] overflow-hidden flex flex-col px-[32px] py-[24px]">
         {/* 헤더 */}
         <div className="flex justify-between items-center ">
-          <h2 className="text-[16px] font-[600]">작업 의뢰서 작성</h2>
+          <div className="flex">
+            <h2 className="text-[16px] font-[600]">작업 의뢰서 작성</h2>
+            <button>
+              <BotMessageSquare
+                size={20}
+                className=" mx-[10px]
+        text-gray-500 hover:text-black 
+        transform -scale-x-100"
+              />
+            </button>
+          </div>
           <div className="flex justify-end gap-[4px]">
             <button onClick={onClose} className="btn" disabled={isSubmitting}>
               취소
