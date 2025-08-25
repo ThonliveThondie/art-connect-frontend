@@ -59,6 +59,10 @@ const App = () => {
           <Route path="/portfolio/item/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio/item/:id/edit" element={<PortfolioEdit />} />
 
+          {/* 디자이너 포트폴리오 보기 (소상공인용) - 기존 컴포넌트 재사용 */}
+          <Route path="/designer/:designerId/portfolio" element={<Portfolio />} />
+          <Route path="/designer/:designerId/portfolio/:portfolioId" element={<PortfolioDetail />} />
+
           <Route path="/projects/completed" element={<CompletedProjects />} />
           <Route path="/projects/ongoing" element={<OngoingProjects />} />
           <Route path="/projects/:projectId" element={<ProjectDetail />} />

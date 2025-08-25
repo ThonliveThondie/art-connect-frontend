@@ -75,3 +75,25 @@ export const deletePortfolioImage = async (portfolioId, imageId) => {
     throw error;
   }
 };
+
+// 디자이너 포트폴리오 목록 조회 (소상공인용)
+export const getDesignerPortfolios = async (designerId) => {
+  try {
+    const response = await apiClient.get(`/api/portfolios/designer/${designerId}`);
+    return response.data;
+  } catch (error) {
+    console.error('디자이너 포트폴리오 목록 조회 실패:', error);
+    throw error;
+  }
+};
+
+// 디자이너 포트폴리오 상세 조회 (소상공인용)
+export const getDesignerPortfolioDetail = async (designerId, portfolioId) => {
+  try {
+    const response = await apiClient.get(`/api/portfolios/designer/${designerId}/${portfolioId}`);
+    return response.data;
+  } catch (error) {
+    console.error('디자이너 포트폴리오 상세 조회 실패:', error);
+    throw error;
+  }
+};

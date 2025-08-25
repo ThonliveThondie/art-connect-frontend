@@ -9,10 +9,12 @@ import {
   deletePortfolioImage,
 } from '../../../api/portfolio/portfolio';
 
-export const useMyPortfolios = () => {
+export const useMyPortfolios = (shouldFetch = true) => {
   const [portfolios, setPortfolios] = useState([]);
 
   const fetchPortfolios = useCallback(async () => {
+    if (!shouldFetch) return;
+
     try {
       const data = await getMyPortfolios();
       const list = Array.isArray(data) ? data : data?.portfolios || [];
@@ -23,7 +25,7 @@ export const useMyPortfolios = () => {
       alert(msg);
       setPortfolios([]);
     }
-  }, []);
+  }, [shouldFetch]);
 
   useEffect(() => {
     fetchPortfolios();
@@ -32,27 +34,34 @@ export const useMyPortfolios = () => {
   return {portfolios, refetch: fetchPortfolios};
 };
 
-export const usePortfolioDetail = (portfolioId) => {
+export const usePortfolioDetail = (portfolioId, shouldFetch = true) => {
   const [portfolio, setPortfolio] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchPortfolio = useCallback(async () => {
-    if (!portfolioId) return;
+    if (!portfolioId || !shouldFetch) return;
+
     try {
+      setIsLoading(true);
+      setError(null);
       const data = await getPortfolioById(portfolioId);
       setPortfolio(data ?? null);
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || '포트폴리오 조회 실패';
       console.error('포트폴리오 조회 실패:', err);
-      alert(msg);
+      setError(msg);
       setPortfolio(null);
+    } finally {
+      setIsLoading(false);
     }
-  }, [portfolioId]);
+  }, [portfolioId, shouldFetch]);
 
   useEffect(() => {
     fetchPortfolio();
   }, [fetchPortfolio]);
 
-  return {portfolio, refetch: fetchPortfolio};
+  return {portfolio, isLoading, error, refetch: fetchPortfolio};
 };
 
 export const useCreatePortfolio = () => {

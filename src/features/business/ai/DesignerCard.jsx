@@ -27,9 +27,7 @@ export default function DesignerCard({
   const portfolioImages = designer?.portfolioImageUrl?.map((item) => item.imageUrl) || [];
 
   const handlePortfolioView = () => {
-    navigate('/portfolio', {
-      state: {viewMode: 'browse', designerId},
-    });
+    navigate(`/designer/${designerId}/portfolio`);
   };
   return (
     <>
